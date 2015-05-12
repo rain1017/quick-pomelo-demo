@@ -32,8 +32,7 @@ choose landlord -> add left 3 cards to landlord
 
 
 TODO:
-1. 断线重连
-2. robot
+1. robot with AI
 
 
 

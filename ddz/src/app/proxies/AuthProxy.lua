@@ -15,9 +15,13 @@ function AuthProxy:login()
             ddz.facade:sendNotification(consts.msgs.ON_DISCONNECT);
             return
         end
-        local filename = cc.FileUtils:getInstance():fullPathForFilename('conf')
-        local config = json.decode(io.readfile(filename))
-        local authInfo = {socialId=tostring(config.socialId), socialType=consts.binding.types.DEVICE};
+        --local filename = cc.FileUtils:getInstance():fullPathForFilename('conf')
+        --local config = json.decode(io.readfile(filename))
+        if not ddz.state.deviceid then
+            ddz.state.deviceid = tostring(os.time() * 10000 + math.random(1, 1000) * 1000 + math.random(1, 1000))
+            cc.utils.State.save(ddz.state)
+        end
+        local authInfo = {socialId=ddz.state.deviceid, socialType=consts.binding.types.DEVICE};
         rpc:request(consts.routes.server.connector.LOGIN, {authInfo=authInfo}, handler(self, self._onLoginResponse))
     end))
     rpc:connectGate('172.16.11.8', 3010)

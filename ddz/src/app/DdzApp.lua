@@ -3,6 +3,7 @@ require("puremvc.init")
 require("cocos.init")
 require("framework.init")
 require('app.network.rpc')
+require(cc.PACKAGE_NAME .. ".cc.utils.GameState")
 local consts = require("app.consts")
 local scheduler = require(cc.PACKAGE_NAME .. ".scheduler")
 

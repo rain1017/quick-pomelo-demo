@@ -26,7 +26,6 @@ function LoadingScene:ctor()
     self.controllers.maskController:node()
         :align(display.CENTER, display.cx, display.cy + 30)
         :addTo(self)
-    printInfo('cc.TEXT_ALIGNMENT_CENTER: %s', cc.TEXT_ALIGNMENT_CENTER)
     self.rendered.error_status = display.newTTFLabel({color = cc.c3b(230,26,26),dimensions = cc.size(480, 20),
         font = "fonts/STFONT.ttf",size=18,align=cc.TEXT_ALIGNMENT_CENTER})
             :align(display.CENTER, display.cx, display.cy)
