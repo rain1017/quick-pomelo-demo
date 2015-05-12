@@ -1,0 +1,3 @@
+local strings = {}
+
+return strings

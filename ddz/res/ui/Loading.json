@@ -1,0 +1,165 @@
+{
+  "QUF": {
+    "Fantasy": {
+      "Sprite": {
+        "19820200": {
+          "desc": "HLDDZ_Loading",
+          "Module": {
+            "0": {
+              "src": [
+                0,
+                0,
+                256,
+                109
+              ],
+              "id": "0",
+              "desc": "Module_Loading_Board_BG"
+            },
+            "1": {
+              "src": [
+                0,
+                109,
+                16,
+                16
+              ],
+              "id": "1",
+              "desc": "Module_Loading_Left"
+            },
+            "2": {
+              "src": [
+                16,
+                109,
+                13,
+                16
+              ],
+              "id": "2",
+              "desc": "Module_Loading_Center"
+            }
+          },
+          "img": "HLDDZ_Loading",
+          "id": "19820200"
+        }
+      }
+    },
+    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "QUF.xsd",
+    "RootView": {
+      "btnesc": "Panel_Btn_exit",
+      "btnok": "Button_login_Login",
+      "TitlePanel": {
+        "Panel_loading": {
+          "rect": [
+            0,
+            0,
+            480,
+            320
+          ],
+          "ctrlid": "1982004000",
+          "id": "Panel_loading",
+          "TitlePanel": {
+            "Panel_loading_board": {
+              "rect": [
+                111,
+                159,
+                256,
+                109
+              ],
+              "ctrlid": "1982004001",
+              "TitlePanel": {
+                "Panel_loading_bar": {
+                  "rect": [
+                    28,
+                    61,
+                    0,
+                    16
+                  ],
+                  "ctrlid": "1982004002",
+                  "id": "Panel_loading_bar",
+                  "render": "Render_Loading_bar"
+                }
+              },
+              "render": "Render_Loading_Board_BG",
+              "id": "Panel_loading_board"
+            },
+            "Panel_loading_OwnerDraw_View": {
+              "rect": [
+                0,
+                0,
+                480,
+                320
+              ],
+              "penetrate": "true",
+              "ctrlid": "1982004003",
+              "id": "Panel_loading_OwnerDraw_View",
+              "ownerdraw": "true"
+            }
+          },
+          "Label": {
+            "HLDDZ_loading_text": {
+              "ctrlid": "2014103106",
+              "color": [
+                255,
+                250,
+                200
+              ],
+              "viewalign": "center",
+              "ColorChange": "false",
+              "font": [
+                18,
+                "STFONT",
+                "regular"
+              ],
+              "id": "HLDDZ_loading_text",
+              "rect": [
+                80,
+                260,
+                318,
+                18
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Render": {
+      "Render_Loading_bar": {
+        "FanObj": {
+          "FANOBJ_Render_Loading_bar_Left": {
+            "fantasy": [
+              "sprite",
+              "19820200",
+              "frame",
+              "1"
+            ],
+            "id": "FANOBJ_Render_Loading_bar_Left"
+          },
+          "FANOBJ_Render_Loading_bar_center": {
+            "fantasy": [
+              "sprite",
+              "19820200",
+              "frame",
+              "2"
+            ],
+            "id": "FANOBJ_Render_Loading_bar_center"
+          }
+        },
+        "type": "FanGrid3Render",
+        "id": "Render_Loading_bar"
+      },
+      "Render_Loading_Board_BG": {
+        "FanObj": {
+          "FANOBJ_Render_Loading_Board_BG": {
+            "fantasy": [
+              "sprite",
+              "19820200",
+              "frame",
+              "0"
+            ],
+            "id": "FANOBJ_Render_Loading_Board_BG"
+          }
+        },
+        "type": "FanRender",
+        "id": "Render_Loading_Board_BG"
+      }
+    }
+  }
+}
