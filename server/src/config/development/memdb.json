@@ -1,13 +1,83 @@
 {
-	"redis" : {
-		"host" : "127.0.0.1",
-		"port" : 6379,
-		"db" : 1,
-		"options" : {}
-	},
 	"backend" : {
 		"engine" : "mongodb",
-		"url" : "mongodb://localhost/quick-pomelo-test",
+		"url" : "mongodb://localhost/quick-pomelo-demo",
 		"options" : {}
+	},
+	"locking" : {
+		"host" : "127.0.0.1",
+		"port" : 6379,
+		"db" : 1
+	},
+	"event" : {
+		"host" : "127.0.0.1",
+		"port" : 6379,
+		"db" : 1
+	},
+
+	"shards" : {
+		"gate-server" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"connector-server-1" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"connector-server-2" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"player-server-1" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"player-server-2" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"area-server-1" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"area-server-2" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"team-server-1" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		},
+		"team-server-2" : {
+			"slave" : {
+				"host" : "127.0.0.1",
+				"port" : 6379,
+				"db" : 1
+			}
+		}
 	}
 }
