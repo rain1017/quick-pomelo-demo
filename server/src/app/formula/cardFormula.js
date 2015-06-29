@@ -6,15 +6,26 @@ var logger = require('pomelo-logger').getLogger('area', __filename);
 
 var exp = module.exports;
 
+exp.cardPoints = {};
+exp.cardPoints[consts.card.jokerRed] = consts.card.points.length + 1;
+exp.cardPoints[consts.card.joker] = consts.card.points.length;
+consts.card.points.forEach(function(k, i){
+	exp.cardPoints[k] = i;
+});
+
+exp.pointIdx2Point = function(i) {
+	if (i === consts.card.points.length) {
+		return consts.card.joker;
+	} else if (i === consts.card.points.length + 1) {
+		return consts.card.jokerRed;
+	} else {
+		return consts.card.points[i];
+	}
+};
+
 exp._toPointIdx = function(c, isPoint) {
 	var p = isPoint ? c : c.substring(1);
-	if(p === consts.card.joker) {
-		return consts.card.points.length;
-	} else if(p === consts.card.jokerRed) {
-		return consts.card.points.length + 1;
-	} else {
-		return _.indexOf(consts.card.points, p);
-	}
+	return exp.cardPoints[p];
 };
 
 exp.sortCards = function(cards, isPoint) {
@@ -343,6 +354,13 @@ exp.isHandSpaceShuttlePair = function(cards, isPoint, sorted) {
 	return false;
 };
 
-
+exp.arrangeCards = function(cards, sorted) {
+	var trios = [], solos = [], pairs = [], straights = [], bombs = [];
+	cards = sorted ? cards : exp.sortCards(cards, true);
+	var ps = cards.map(exp._toPointIdx);
+	for (var i = 0; i < ps.length; i++) {
+		ps[i]
+	}
+};
 
 

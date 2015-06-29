@@ -66,7 +66,6 @@ function MyApp:run()
 
     facade:sendNotification(consts.msgs.START)
 
-
     --self:enterScene("LoadingScene")
     --self:enterScene("MainScene")
     --[[

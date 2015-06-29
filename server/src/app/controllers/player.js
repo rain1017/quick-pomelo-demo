@@ -13,7 +13,7 @@ var proto = Controller.prototype;
 
 proto.authAsync = P.coroutine(function*(authInfo){
 	var models = this.app.models;
-	var socialId = authInfo.socialId, socialType = authInfo.socialType;
+	var socialId = new String(authInfo.socialId), socialType = authInfo.socialType;
 	var binding = yield models.Binding.findOneAsync({socialId: socialId, socialType: socialType});
 	if(!binding) {
 		return false;

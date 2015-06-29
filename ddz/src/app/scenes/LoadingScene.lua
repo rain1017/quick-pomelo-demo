@@ -32,6 +32,7 @@ function LoadingScene:ctor()
             :addTo(self)
             :zorder(100)
             :hide()
+
 end
 
 function LoadingScene:setProgress(status, progress)

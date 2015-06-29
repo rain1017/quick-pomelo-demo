@@ -77,7 +77,12 @@ module.exports = function(app){
 		}
 	};
 
-	areaSchema.methods.nextTurn = () => this.lastTurn + 1 >= 3 ? this.lastTurn + 1 - 3 : this.lastTurn + 1;
+	areaSchema.methods.nextTurn = function(lastTurn) {
+		if(lastTurn === undefined) {
+			lastTurn = this.lastTurn;
+		}
+		return lastTurn + 1 >= 3 ? lastTurn + 1 - 3 : lastTurn + 1;
+	};
 	areaSchema.methods.playingPlayerId = () => this.playerIds[this.lastTurn];
 	areaSchema.methods.turnOfPlayer = (playerId) => _.indexOf(this.playerIds, playerId);
 	areaSchema.methods.isLordChoosed = () => this.landlord !== -1;

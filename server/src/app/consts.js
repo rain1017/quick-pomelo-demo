@@ -74,7 +74,12 @@ exp.routes = {
 			CHOOSE_LORD: 'area.chooseLord',
 			PLAY: 'area.play',
 			GAME_OVER: 'area.gameOver',
-		}
+		},
+        pomelo: {
+            DISCONNECT: 'disconnect',
+            TIMEOUT: 'timeout',
+            ON_KICK: 'onKick',
+        }
 	},
 	server: {
 		gate: {
@@ -88,6 +93,7 @@ exp.routes = {
 			UPDATE: 'player.playerHandler.update',
 		},
 		area: {
+			CONNECT: 'area.areaHandler.connect',
 			SEARCH_JOIN: 'area.areaHandler.searchAndJoin',
 			JOIN: 'area.areaHandler.join',
 			READY: 'area.areaHandler.ready',
@@ -99,7 +105,7 @@ exp.routes = {
 };
 
 exp.play = {
-	WAIT_TIME: 15,
+	WAIT_TIME: 5,
 	SERVER_TIME_DELAY: 2,
 };
 
