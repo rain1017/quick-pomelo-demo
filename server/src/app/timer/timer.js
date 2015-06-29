@@ -1,6 +1,6 @@
 'use strict';
 
-var logger = require('pomelo-logger').getLogger('area', __filename);
+var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 var P = require('bluebird');
 var exp = module.exports;
 
@@ -37,7 +37,7 @@ proto._wrapTimer = function(id, cb, autoRemove) {
 	return function(){
 		P.coroutine(function*(){
 			logger.debug('timer called: %s', id);
-			yield self.app.memdb.goose.transaction(cb);
+			yield self.app.memdb.goose.transaction(cb, self.app.getServerId());
 		})()
 		.catch(function(e){
 			logger.error('error raised in timer[%s]: ', id, e);

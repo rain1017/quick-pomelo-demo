@@ -9,7 +9,7 @@ var cardFormula = require('../formula/cardFormula');
 var consts = require('../consts');
 var resp = require('../resp');
 var timer = require('../timer/timer');
-var logger = require('pomelo-logger').getLogger('area', __filename);
+var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 var Controller = function(app){
 	this.app = app;
@@ -21,14 +21,14 @@ var proto = Controller.prototype;
 proto.dealCardsAsync = P.coroutine(function*(areaId){
 	// send player cards, arrange choose lord
 	var pack = _.shuffle(consts.card.pack);
-	var area = _.isString(areaId) ? yield this.app.models.Area.findLockedAsync(areaId) : areaId;
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
 	var playerCards = [], i, self = this, msg;
 	areaId = area._id;
 	if(area.playerIds.length !== 3) {
 		throw new Error('area.playerIds.length must equals 3 when dealCards');
 	}
 	for (i = 0; i < area.playerIds.length; i++) {
-		var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, area.playerIds[i]);
+		var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, area.playerIds[i]);
 		areaPlayer.cards = cardFormula.sortCards(_.slice(pack, i * 17, i * 17 + 17));
 		playerCards.push(areaPlayer.cards);
 		yield areaPlayer.saveAsync();
@@ -57,7 +57,7 @@ proto.dealCardsAsync = P.coroutine(function*(areaId){
 
 proto._timeoutChooseLordAsync = P.coroutine(function*(areaId, playerId){
 	logger.info('game._timeoutChooseLordAsync: areaId=%s, playerId=%s', areaId, playerId);
-	var area = yield this.app.models.Area.findAsync(areaId);
+	var area = yield this.app.models.Area.findByIdReadOnlyAsync(areaId);
 	if (area.landlordChooseTimes === 0 && area.lastTurn === playerId) {
 		yield this.chooseLordAsync(areaId, playerId, true);
 	} else {
@@ -67,7 +67,7 @@ proto._timeoutChooseLordAsync = P.coroutine(function*(areaId, playerId){
 
 proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 	playerId = parseInt(playerId), choosed = !!choosed;
-	var area = yield this.app.models.Area.findLockedAsync(areaId);
+	var area = yield this.app.models.Area.findByIdAsync(areaId);
 	var timerId, msg, self = this;
 	if(!area.isOngoingState() || area.playingPlayerId() !== playerId ||
 		area.isChoosingLordDone()) {
@@ -100,7 +100,7 @@ proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 		if(area.isLordChoosed()) {
 			// choseingLord done: change state to playing, add lordCards to landlord, push LORD_CHOOSED msg, client landlord must start to play
 			area.changeStateTo(consts.gameState.playing);
-			var landlord = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, area.landlord);
+			var landlord = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, area.landlord);
 			landlord.cards = cardFormula.sortCards(landlord.cards.concat(area.lordCards));
 			msg = {
 				area: {
@@ -161,8 +161,8 @@ proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 
 proto._timeoutPlayAsync = P.coroutine(function*(areaId, playerId){
 	logger.info('game._timeoutPlayAsync: areaId=%s, playerId=%s', areaId, playerId);
-	var area = yield this.app.models.Area.findLockedAsync(areaId);
-	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, playerId);
+	var area = yield this.app.models.Area.findByIdAsync(areaId);
+	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, playerId);
 	var cards = cardFormula.autoPlay(areaPlayer.cards, area.getRoundWinner() === playerId);
 	yield this.playAsync(areaId, playerId, cards);
 });
@@ -171,7 +171,7 @@ proto.playAsync = P.coroutine(function*(areaId, playerId, cards){
 	// check cards, check win, arrange next play
 	playerId = parseInt(playerId);
 	cards = cards.length === undefined ? [] : cards;
-	var area = yield this.app.models.Area.findLockedAsync(areaId);
+	var area = yield this.app.models.Area.findByIdAsync(areaId);
 	if(!area.isPlayingState() || area.playingPlayerId() !== playerId) {
 		logger.debug('invalid play card action: playerId=%s, playingPlayerId=%s, state=%s',
 			playerId, area.playingPlayerId(), area.state);
@@ -180,7 +180,7 @@ proto.playAsync = P.coroutine(function*(areaId, playerId, cards){
 
 	var self = this, timerId;
 
-	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, playerId);
+	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, playerId);
 
 	var lastCards = area.lastPlayed();
 	if(lastCards && cards.length && (!cardFormula.isCardsValid(cards) || !cardFormula.isCardsGreater(cards, lastCards.cards))) {
@@ -254,13 +254,13 @@ proto._onWinAsync = P.coroutine(function*(area, winner){
 
 	for (i = area.playerIds.length - 1; i >= 0; i--) {
 		playerId = area.playerIds[i];
-		var ap = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(area._id, playerId);
+		var ap = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(area._id, playerId);
 		ap.ready = false;
 		ap.cards = [];
 		ap.show = false;
 		retAreaPlayers[playerId] = ap.toClientData();
 
-		player = yield this.app.models.Player.findLockedAsync(playerId);
+		player = yield this.app.models.Player.findByIdAsync(playerId);
 		if(playerId === winner.playerId) {
 			retPlayerData[playerId] =  yield this.app.controllers.player.applyRewardAsync(player,
 				formula.reward.win(area.odds, area.landlord === playerId));
@@ -292,7 +292,7 @@ proto._onWinAsync = P.coroutine(function*(area, winner){
 			return function(){
 				return self._timeoutReadyAsync(areaId, playerId);
 			};
-		})(areaId, playerId));
+		})(areaId, playerId)); //jshint ignore:line
 	}
 
 });

@@ -4,14 +4,14 @@ var P = require('bluebird');
 var env = require('../env');
 var should = require('should');
 var consts = require('../../app/consts');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('team test', function(){
-	beforeEach(env.dropDatabase);
-	after(env.dropDatabase);
+	beforeEach(env.beforeEach);
+	afterEach(env.afterEach);
 
 	it('team test', function(cb){
-		var app = env.createApp('server1', 'team');
+		var app = env.createApp('team-server-1', 'team');
 
 		P.coroutine(function*(){
 			yield P.promisify(app.start, app)();
@@ -40,7 +40,7 @@ describe('team test', function(){
 				});
 				yield teamController.joinAsync(teamId, playerId1);
 
-				var team = yield app.models.Team.findAsync(teamId);
+				var team = yield app.models.Team.findByIdAsync(teamId);
 				team.playerIds.toObject().should.eql([playerId, playerId1]);
 
 				yield teamController.quitAsync(teamId, playerId);
@@ -48,8 +48,8 @@ describe('team test', function(){
 
 				players = yield teamController.getPlayersAsync(teamId);
 				players.length.should.eql(1);
-				should.not.exist(yield app.models.Area.findAsync(teamId));
-			}));
+				should.not.exist(yield app.models.Area.findByIdAsync(teamId));
+			}), app.getServerId());
 
 			yield P.promisify(app.stop, app)();
 		})()

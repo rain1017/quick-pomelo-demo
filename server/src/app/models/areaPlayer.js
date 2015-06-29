@@ -18,12 +18,12 @@ module.exports = function(app){
 
 	areaPlayerSchema.index({areaId : 1, playerId : 1}, {unique : true});
 
-	areaPlayerSchema.statics.findByAreaIdAndPlayerIdAsync = function(areaId, playerId) {
-		return this.findOneAsync({areaId: areaId, playerId: playerId});
+	areaPlayerSchema.statics.findByAreaIdAndPlayerIdReadOnlyAsync = function(areaId, playerId) {
+		return this.findOneReadOnlyAsync({areaId: areaId, playerId: playerId});
 	};
 
-	areaPlayerSchema.statics.findByAreaIdAndPlayerIdLockedAsync = function(areaId, playerId) {
-		return this.findOneLockedAsync({areaId: areaId, playerId: playerId});
+	areaPlayerSchema.statics.findByAreaIdAndPlayerIdAsync = function(areaId, playerId) {
+		return this.findOneAsync({areaId: areaId, playerId: playerId});
 	};
 
 	areaPlayerSchema.virtual('cardsCount').get(function(){

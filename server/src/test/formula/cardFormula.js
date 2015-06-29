@@ -4,11 +4,11 @@ var P = require('bluebird');
 var should = require('should');
 var consts = require('../../app/consts');
 var cardFormula = require('../../app/formula/cardFormula');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('area test', function(){
 
-	it.only('cardFormula test', function(cb){
+	it('cardFormula test', function(cb){
 		var self = this;
 		var keyOfHandType = function(handType) {
 			var keys = Object.keys(consts.card.handTypes);

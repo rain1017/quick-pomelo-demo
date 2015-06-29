@@ -3,20 +3,19 @@
 var P = require('bluebird');
 var env = require('../env');
 var consts = require('../../app/consts');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('player test', function(){
-	beforeEach(env.dropDatabase);
-	after(env.dropDatabase);
+	beforeEach(env.beforeEach);
+	afterEach(env.afterEach);
 
 	it('create/remove/connect/disconnect', function(cb){
-		var app = env.createApp('server1', 'area');
+		var app = env.createApp('player-server-1', 'player');
 
 		P.coroutine(function*(){
 			yield P.promisify(app.start, app)();
 
 			var playerController = app.controllers.player;
-			var area = app.controllers.area;
 
 			yield app.memdb.goose.transaction(P.coroutine(function*(){
 				var playerId = yield playerController.createAsync({
@@ -32,7 +31,7 @@ describe('player test', function(){
 
 				yield playerController.disconnectAsync(playerId);
 				yield playerController.removeAsync(playerId);
-			}));
+			}), app.getServerId());
 
 			yield P.promisify(app.stop, app)();
 		})()

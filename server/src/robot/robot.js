@@ -7,7 +7,7 @@ var util = require('util');
 var AI = require('./ai');
 var ModelStore = require('./modelStore');
 var consts = require('../app/consts');
-var logger = require('pomelo-logger').getLogger('robot', __filename);
+var logger = quick.logger.getLogger('robot', __filename);
 
 P.longStackTraces();
 

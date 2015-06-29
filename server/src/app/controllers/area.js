@@ -8,7 +8,7 @@ var consts = require('../consts');
 var resp = require('../resp');
 var timer = require('../timer/timer');
 var formula = require('../formula/formula');
-var logger = require('pomelo-logger').getLogger('area', __filename);
+var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 var Controller = function(app){
 	this.app = app;
@@ -18,7 +18,7 @@ var proto = Controller.prototype;
 
 proto.searchAndJoinAsync = P.coroutine(function*(playerId, opts){
 	for(let areaId of this.app.areaSearcher.getAvailAreaIds()) {
-		var area = yield this.app.models.Area.findLockedAsync(areaId);
+		var area = yield this.app.models.Area.findByIdAsync(areaId);
 		if(!area || area.playerCount() >= 3) {
 			this.app.areaSearcher.deleteAvailArea(areaId);
 			continue;
@@ -46,7 +46,7 @@ proto.createAsync = P.coroutine(function*(playerId, opts){
 });
 
 proto.removeAsync = P.coroutine(function*(areaId){
-	var area = yield this.app.models.Area.findLockedAsync(areaId);
+	var area = yield this.app.models.Area.findByIdAsync(areaId);
 	if(!area){
 		throw new Error('area ' + areaId + ' not exist');
 	}
@@ -60,7 +60,7 @@ proto.removeAsync = P.coroutine(function*(areaId){
 });
 
 proto.connectAsync = P.coroutine(function*(playerId, areaId) {
-	var area = _.isString(areaId) ? yield this.app.models.Area.findLockedAsync(areaId) : areaId;
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
 	areaId = area._id;
 	if(!area) {
 		throw new Error('area ' + areaId + ' not exist');
@@ -75,18 +75,18 @@ proto.connectAsync = P.coroutine(function*(playerId, areaId) {
 	for (var i = 0; i < area.playerIds.length; i++) {
 		if(area.playerIds[i]) {
 			if(area.playerIds[i] === playerId) {
-				areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, area.playerIds[i]);
+				areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, area.playerIds[i]);
 				areaPlayer.online = true;
 				yield areaPlayer.saveAsync();
 			} else {
-				areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, area.playerIds[i]);
+				areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdReadOnlyAsync(areaId, area.playerIds[i]);
 			}
 			if (areaPlayer.playerId === playerId) {
 				areaPlayers.push(areaPlayer.toClientData());
 			} else {
 				areaPlayers.push(areaPlayer.toSimpleClientData());
 			}
-			player = yield this.app.models.Player.findAsync(area.playerIds[i]);
+			player = yield this.app.models.Player.findByIdReadOnlyAsync(area.playerIds[i]);
 			players.push(player.toClientData());
 		} else {
 			areaPlayers.push(null);
@@ -100,7 +100,7 @@ proto.connectAsync = P.coroutine(function*(playerId, areaId) {
 
 proto.disconnectAsync = P.coroutine(function*(playerId, areaId){
 	// TODO: playing -> let a robot to replace the player, waitToStart -> area.quit
-	var area = yield this.app.models.Area.findAsync(areaId);
+	var area = yield this.app.models.Area.findByIdReadOnlyAsync(areaId);
 	if(_.indexOf(area.playerIds, playerId) === -1) {
 		throw new Error(util.format('player not exist in area: areaId=%s, playerId=%s', areaId, playerId));
 	}
@@ -108,24 +108,24 @@ proto.disconnectAsync = P.coroutine(function*(playerId, areaId){
 		yield this.quitAsync(area, playerId);
 		return;
 	} else if(area.isOngoingState()) {
-		var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, playerId);
+		var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, playerId);
 		areaPlayer.online = false;
 		yield areaPlayer.saveAsync();
 	}
 });
 
 proto.getPlayersAsync = P.coroutine(function*(areaId){
-	return yield this.app.models.Player.findAsync({areaId: areaId});
+	return yield this.app.models.Player.findReadOnlyAsync({areaId: areaId});
 });
 
 proto.joinAsync = P.coroutine(function*(areaId, playerId){
-	var area = _.isString(areaId) ? yield this.app.models.Area.findLockedAsync(areaId) : areaId;
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
 	playerId = parseInt(playerId);
 	areaId = area._id;
 	if(!area){
 		throw new Error('area ' + areaId + ' not exist');
 	}
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -146,7 +146,7 @@ proto.joinAsync = P.coroutine(function*(areaId, playerId){
 	var areaPlayer = new this.app.models.AreaPlayer({areaId: areaId, playerId: playerId, _id: uuid.v4()});
 	yield areaPlayer.saveAsync();
 
-	var channelId = 'a.' + areaId;
+	var channelId = 'a:' + areaId;
 	yield this.app.controllers.push.joinAsync(channelId, playerId, player.connectorId);
 
 	var pushedPlayerIds = area.playerIds.filter((id) => id !== null && id !== playerId);
@@ -165,11 +165,11 @@ proto.joinAsync = P.coroutine(function*(areaId, playerId){
 
 proto.readyAsync = P.coroutine(function*(areaId, playerId){
 	// change area.state to waitToStart, when everyone ready, start the game
-	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findLockedAsync(playerId) : playerId;
-	var area = _.isString(areaId) ? yield this.app.models.Area.findLockedAsync(areaId) : areaId;
+	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findByIdAsync(playerId) : playerId;
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
 	areaId = area._id, playerId = player._id;
 
-	var areaPlayer = yield this.app.models.AreaPlayer.findOneLockedAsync({areaId: area._id, playerId: player._id});
+	var areaPlayer = yield this.app.models.AreaPlayer.findOneAsync({areaId: area._id, playerId: player._id});
 	areaPlayer.ready = true;
 	yield areaPlayer.saveAsync();
 
@@ -182,7 +182,7 @@ proto.readyAsync = P.coroutine(function*(areaId, playerId){
 	if(area.playerIds.length === 3 && !area.playerIds.filter((id => id === null)).length) {
 		var allReady = true;
 		for (var i = 0; i < area.playerIds.length; i++) {
-			areaPlayer = yield this.app.models.AreaPlayer.findOneAsync({areaId: area._id, playerId: area.playerIds[i]});
+			areaPlayer = yield this.app.models.AreaPlayer.findOneReadOnlyAsync({areaId: area._id, playerId: area.playerIds[i]});
 			if(!areaPlayer.ready) {
 				logger.debug('player is not ready: %s', areaPlayer.playerId);
 				allReady = false;
@@ -202,9 +202,9 @@ proto.readyAsync = P.coroutine(function*(areaId, playerId){
 
 proto.quitAsync = P.coroutine(function*(areaId, playerId){
 	logger.debug('check domain1');
-	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findLockedAsync(playerId) : playerId;
+	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findByIdAsync(playerId) : playerId;
 	logger.debug('check domain2');
-	var area = _.isString(areaId) ? yield this.app.models.Area.findLockedAsync(areaId) : areaId;
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
 	logger.debug('check domain3');
 	var i;
 	if(!player){
@@ -236,7 +236,7 @@ proto.quitAsync = P.coroutine(function*(areaId, playerId){
 				retPlayerData[area.playerIds[i]] = yield this.app.controllers.player.applyRewardAsync(area.playerIds[i], reward);
 			}
 			if(area.playerIds[i]) {
-				var ap = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, area.playerIds[i]);
+				var ap = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdReadOnlyAsync(areaId, area.playerIds[i]);
 				retAreaPlayers[ap.playerId] = ap.toSimpleClientData();
 			}
 		}
@@ -246,7 +246,7 @@ proto.quitAsync = P.coroutine(function*(areaId, playerId){
 	area.markModified('playerIds');
 	yield area.saveAsync();
 
-	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdLockedAsync(areaId, playerId);
+	var areaPlayer = yield this.app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(areaId, playerId);
 	yield areaPlayer.removeAsync();
 
 	for (i = 0; i < area.playerIds.length; i++) {
@@ -267,7 +267,7 @@ proto.quitAsync = P.coroutine(function*(areaId, playerId){
 	};
 	yield this.pushAsync(areaId, [playerId], consts.routes.client.area.QUIT, msg, false);
 
-	var channelId = 'a.' + areaId;
+	var channelId = 'a:' + areaId;
 	yield this.app.controllers.push.quitAsync(channelId, playerId);
 
 	var playerIds = area.playerIds.filter((playerId) => playerId !== null);
@@ -293,12 +293,12 @@ proto.quitAsync = P.coroutine(function*(areaId, playerId){
  * playerIds - [playerId], set null to push all
  */
 proto.pushAsync = P.coroutine(function*(areaId, playerIds, route, msg, persistent){
-	var channelId = 'a.' + areaId;
+	var channelId = 'a:' + areaId;
 	return yield this.app.controllers.push.pushAsync(channelId, playerIds, route, msg, persistent);
 });
 
 proto.getMsgsAsync = P.coroutine(function*(areaId, seq, count){
-	var channelId = 'a.' + areaId;
+	var channelId = 'a:' + areaId;
 	return yield this.app.controllers.push.getMsgsAsync(channelId, seq, count);
 });
 

@@ -5,14 +5,14 @@ var env = require('../env');
 var should = require('should');
 var consts = require('../../app/consts');
 var timer = require('../../app/timer/timer');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('area test', function(){
-	beforeEach(env.dropDatabase);
-	after(env.dropDatabase);
+	beforeEach(env.beforeEach);
+	afterEach(env.afterEach);
 
 	it('area player create/connect/join/quit/remove/getPlayers test', function(cb){
-		var app = env.createApp('server1', 'area');
+		var app = env.createApp('area-server-1', 'area');
 		P.coroutine(function*(){
 			yield P.promisify(app.start, app)();
 
@@ -44,7 +44,7 @@ describe('area test', function(){
 
 				yield areaController.disconnectAsync(playerId1, areaId);
 
-				var area = yield app.models.Area.findAsync(areaId);
+				var area = yield app.models.Area.findById(areaId);
 				area.playerIds.toObject().should.eql([playerId, null]);
 
 				yield areaController.quitAsync(areaId, playerId);
@@ -52,10 +52,10 @@ describe('area test', function(){
 
 				players = yield areaController.getPlayersAsync(areaId);
 				players.length.should.eql(0);
-				should.not.exist(yield app.models.Area.findAsync(areaId));
+				should.not.exist(yield app.models.Area.findById(areaId));
 
 				timer.getTimerManager(app).cancelAll();
-			}));
+			}), app.getServerId());
 
 			yield P.promisify(app.stop, app)();
 		})()
@@ -64,8 +64,8 @@ describe('area test', function(){
 
 
 	it('area player chooseLord test', function(cb){
-		this.timeout(5000);
-		var app = env.createApp('server1', 'area');
+		this.timeout(10000);
+		var app = env.createApp('area-server-1', 'area');
 		P.coroutine(function*(){
 			yield P.promisify(app.start, app)();
 
@@ -89,14 +89,14 @@ describe('area test', function(){
 				});
 
 				// waitToStart
-				var area = yield app.models.Area.findAsync(areaId);
+				var area = yield app.models.Area.findById(areaId);
 				area.state.should.eql(consts.gameState.waitToStart);
 
 				yield areaController.joinAsync(areaId, playerId1);
 				yield areaController.joinAsync(areaId, playerId2); // should auto deal cards
 
 				// choosingLord
-				area = yield app.models.Area.findAsync(areaId);
+				area = yield app.models.Area.findById(areaId);
 				area.state.should.eql(consts.gameState.choosingLord);
 				var playingPlayerId = area.playingPlayerId();
 				var testPlayingPlayerId = area.playerIds.filter((id) => id !== playingPlayerId)[0];
@@ -108,11 +108,11 @@ describe('area test', function(){
 				res.code.should.eql(consts.resp.codes.SUCCESS);
 
 				yield gameController.chooseLordAsync(areaId, area.playerIds[area.nextTurn()], false);
-				area = yield app.models.Area.findAsync(areaId);
+				area = yield app.models.Area.findById(areaId);
 				yield gameController.chooseLordAsync(areaId, area.playingPlayerId(), false);
 
 				// playing
-				area = yield app.models.Area.findAsync(areaId);
+				area = yield app.models.Area.findById(areaId);
 				area.state.should.eql(consts.gameState.playing);
 
 				var landlord = yield app.models.AreaPlayer.findByAreaIdAndPlayerIdAsync(area._id, area.landlord);
@@ -128,11 +128,11 @@ describe('area test', function(){
 					res.code.should.eql(i === landlord.cards.length - 1 ? consts.resp.codes.INVALID_ACTION : consts.resp.codes.SUCCESS);
 				}
 
-				area = yield app.models.Area.findAsync(areaId);
+				area = yield app.models.Area.findById(areaId);
 				area.state.should.eql(consts.gameState.waitToStart);
 
 				timer.getTimerManager(app).cancelAll();
-			}));
+			}), app.getServerId());
 			yield P.promisify(app.stop, app)();
 		})()
 		.nodeify(cb);

@@ -3,7 +3,7 @@ var util = require('util');
 var _ = require('lodash');
 var consts = require('../app/consts');
 var cardFormula = require('../app/formula/cardFormula');
-var logger = require('pomelo-logger').getLogger('robot', __filename);
+var logger = require('quick-pomelo').logger.getLogger('robot', __filename);
 
 var PlayerCards = function(opts){
 	this.knownCards = opts.knownCards || [];

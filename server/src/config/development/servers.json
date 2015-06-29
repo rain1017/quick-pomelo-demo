@@ -3,8 +3,8 @@
 		{"id": "gate-server", "host": "127.0.0.1", "port": 13010, "clientPort": 3010, "frontend": true, "args": ["--debug=5860", "--harmony" ]}
 	],
 	"connector": [
-		{"id": "connector-server-1", "host": "127.0.0.1", "clientHost":"172.16.11.8", "port": 13100, "clientPort": 3100, "frontend": true, "args": ["--debug=5870", "--harmony" ]},
-		{"id": "connector-server-2", "host": "127.0.0.1", "clientHost":"172.16.11.8", "port": 13101, "clientPort": 3101, "frontend": true, "args": ["--debug=5871", "--harmony" ]}
+		{"id": "connector-server-1", "host": "127.0.0.1", "clientHost":"127.0.0.1", "port": 13100, "clientPort": 3100, "frontend": true, "args": ["--debug=5870", "--harmony" ]},
+		{"id": "connector-server-2", "host": "127.0.0.1", "clientHost":"127.0.0.1", "port": 13101, "clientPort": 3101, "frontend": true, "args": ["--debug=5871", "--harmony" ]}
 	],
 	"player": [
 		{"id": "player-server-1", "host": "127.0.0.1", "port": 13200, "args": ["--debug=5880", "--harmony" ]},

@@ -1,8 +1,7 @@
 'use strict';
 
 var path = require('path');
-var logger = require('pomelo-logger').getLogger('area', __filename);
-
+var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 var AreaSearcher = function(app, opts){
 	opts = opts || {};

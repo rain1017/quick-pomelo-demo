@@ -5,7 +5,7 @@ var uuid = require('node-uuid');
 var _ = require('lodash');
 var util = require('util');
 var consts = require('../consts');
-var logger = require('pomelo-logger').getLogger('team', __filename);
+var logger = require('quick-pomelo').logger.getLogger('team', __filename);
 
 var Controller = function(app){
 	this.app = app;
@@ -29,7 +29,7 @@ proto.createAsync = P.coroutine(function*(playerId, opts){
 });
 
 proto.removeAsync = P.coroutine(function*(teamId){
-	var team = yield this.app.models.Team.findLockedAsync(teamId);
+	var team = yield this.app.models.Team.findByIdAsync(teamId);
 	if(!team){
 		throw new Error('team ' + teamId + ' not exist');
 	}
@@ -43,15 +43,15 @@ proto.removeAsync = P.coroutine(function*(teamId){
 });
 
 proto.getPlayersAsync = P.coroutine(function*(teamId){
-	return yield this.app.models.Player.findAsync({teamId: teamId});
+	return yield this.app.models.Player.findReadOnlyAsync({teamId: teamId});
 });
 
 proto.joinAsync = P.coroutine(function*(teamId, playerId){
-	var team = yield this.app.models.Team.findLockedAsync(teamId);
+	var team = yield this.app.models.Team.findByIdAsync(teamId);
 	if(!team){
 		throw new Error('team ' + teamId + ' not exist');
 	}
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -61,7 +61,7 @@ proto.joinAsync = P.coroutine(function*(teamId, playerId){
 	team.playerIds = team.playerIds.concat(playerId);
 	yield team.saveAsync();
 
-	var channelId = 't.' + teamId;
+	var channelId = 't:' + teamId;
 	yield this.app.controllers.push.joinAsync(channelId, playerId, player.connectorId);
 
 	var pushedPlayerIds = team.playerIds.filter((id) => id !== null && id !== playerId);
@@ -70,8 +70,8 @@ proto.joinAsync = P.coroutine(function*(teamId, playerId){
 });
 
 proto.quitAsync = P.coroutine(function*(teamId, playerId){
-	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findLockedAsync(playerId) : playerId;
-	var team = _.isString(teamId) ? yield this.app.models.Team.findLockedAsync(teamId) : teamId;
+	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findByIdAsync(playerId) : playerId;
+	var team = _.isString(teamId) ? yield this.app.models.Team.findByIdAsync(teamId) : teamId;
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -83,7 +83,7 @@ proto.quitAsync = P.coroutine(function*(teamId, playerId){
 	player.teamId = '';
 	yield player.saveAsync();
 
-	var channelId = 't.' + teamId;
+	var channelId = 't:' + teamId;
 	yield this.app.controllers.push.quitAsync(channelId, playerId);
 
 	var idx = _.indexOf(team.playerIds, playerId);
@@ -114,12 +114,12 @@ proto.quitAsync = P.coroutine(function*(teamId, playerId){
  * playerIds - [playerId], set null to push all
  */
 proto.pushAsync = P.coroutine(function*(teamId, playerIds, route, msg, persistent){
-	var channelId = 't.' + teamId;
+	var channelId = 't:' + teamId;
 	return yield this.app.controllers.push.pushAsync(channelId, playerIds, route, msg, persistent);
 });
 
 proto.getMsgsAsync = P.coroutine(function*(teamId, seq, count){
-	var channelId = 't.' + teamId;
+	var channelId = 't:' + teamId;
 	return yield this.app.controllers.push.getMsgsAsync(channelId, seq, count);
 });
 

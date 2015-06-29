@@ -1,12 +1,12 @@
 'use strict';
 
 var P = require('bluebird');
-var pomeloLogger = require('pomelo-logger');
 var util = require('util');
 var pomelo = require('pomelo');
 var quick = require('quick-pomelo');
 var RedisIDGenerator = require('redis-id-generator');
 var pomeloConstants = require('pomelo/lib/util/constants');
+var pomeloLogger = require('pomelo/node_modules/pomelo-logger');
 var logger = pomeloLogger.getLogger('pomelo', __filename);
 
 var app = pomelo.createApp();
@@ -31,45 +31,27 @@ app.configure('all', function() {
 		timeout : 10 * 1000,
 	});
 
-	// Configure redis-id-generator
-	app.loadConfigBaseApp('redisIdGeneratorConfig', 'redisIdGenerator.json');
-	var idgen = new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis);
-	idgen.initKey('player__id', null, 1);
-	app.set('redisIdGenerator', idgen);
-
-
     // Configure memdb
     app.loadConfigBaseApp('memdbConfig', 'memdb.json');
-    var mdbConfig = app.get('memdbConfig');
-    var shardId = app.getServerId();
-    var shardConfig = mdbConfig.shards[shardId];
-    for(var key in shardConfig){
-        // Override shard specific config
-        mdbConfig[key] = shardConfig[key];
-    }
-    mdbConfig.shard = shardId;
-    delete mdbConfig.shards;
 
-	// Load components
-	app.load(quick.components.memdb);
-	app.load(quick.components.controllers);
-	app.load(quick.components.routes);
+    // Load components
+    app.load(quick.components.memdb);
+    app.load(quick.components.controllers);
+    app.load(quick.components.routes);
+
 	app.load(require('./app/components/areaSearcher'));
 	app.load(require('./app/components/timer'));
 
-	// Configure logger
-	var loggerConfig = app.getBase() + '/config/log4js.json';
-	var loggerOpts = {
-		serverId : app.getServerId(),
-		base: app.getBase(),
-	};
-	pomeloLogger.configure(loggerConfig, loggerOpts);
-	quick.logger.configure(loggerConfig, loggerOpts);
-	quick.memdb.logger.configure(loggerConfig, loggerOpts);
-	quick.memdb.injectLogger(pomeloLogger);
+    // Configure logger
+    var loggerConfig = app.getBase() + '/config/log4js.json';
+    var loggerOpts = {
+        serverId : app.getServerId(),
+        base: app.getBase(),
+    };
+    quick.logger.configure(loggerConfig, loggerOpts);
 
-	// Configure filter
-	app.filter(quick.filters.transaction(app));
+    // Configure filter
+    app.filter(quick.filters.transaction(app));
 
 	// Add beforeStop hook
 	app.lifecycleCbs[pomeloConstants.LIFECYCLE.BEFORE_SHUTDOWN] = function(app, shutdown, cancelShutDownTimer){
@@ -101,6 +83,12 @@ app.configure('all', function() {
 		};
 		cb(err, resp);
 	});
+
+	// Configure redis-id-generator
+	app.loadConfigBaseApp('redisIdGeneratorConfig', 'redisIdGenerator.json');
+	var idgen = new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis);
+	idgen.initKey('player__id', 0, 1);
+	app.set('redisIdGenerator', idgen);
 });
 
 //Connector settings
@@ -116,20 +104,15 @@ app.configure('all', 'gate|connector', function() {
 });
 
 app.configure('development', function(){
-	require('heapdump');
-	P.longStackTraces();
-	quick.Promise.longStackTraces();
-	quick.memdb.Promise.longStackTraces();
-
-	pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.ALL);
-	quick.logger.setGlobalLogLevel(quick.logger.levels.ALL);
-	quick.memdb.logger.setGlobalLogLevel(quick.memdb.logger.levels.ALL);
+    require('heapdump');
+    quick.Promise.longStackTraces();
+    quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
+    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
 });
 
 app.configure('production', function(){
-	pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.INFO);
-	quick.logger.setGlobalLogLevel(quick.logger.levels.INFO);
-	quick.memdb.logger.setGlobalLogLevel(quick.memdb.logger.levels.INFO);
+    quick.logger.setGlobalLogLevel(quick.logger.levels.WARN);
+    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.WARN);
 });
 
 process.on('uncaughtException', function(err) {

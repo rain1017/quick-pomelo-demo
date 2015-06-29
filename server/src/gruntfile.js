@@ -44,15 +44,6 @@ module.exports = function(grunt) {
 					require: 'test/blanket'
 				}
 			},
-			coverage: {
-				src: watchFiles.testJS,
-				options : {
-					reporter: 'html-cov',
-					quiet: true,
-					require: 'test/blanket',
-					save: 'coverage.html'
-				}
-			}
 		},
 		nodemon: {
 			dev: {

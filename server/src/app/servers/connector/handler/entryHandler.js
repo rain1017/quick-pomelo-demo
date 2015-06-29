@@ -3,7 +3,7 @@
 var P = require('bluebird');
 var util = require('util');
 var resp = require('../../../resp');
-var logger = require('pomelo-logger').getLogger('connector', __filename);
+var logger = require('quick-pomelo').logger.getLogger('connector', __filename);
 
 var Handler = function(app){
 	this.app = app;
@@ -38,7 +38,7 @@ proto.login = function(msg, session, next){
 			// auto logout on disconnect
 			self.app.memdb.goose.transaction(function(){
 				return P.promisify(self.logout, self)({closed : true}, session);
-			})
+			}, self.app.getServerId())
 			.catch(function(e){
 				logger.warn(e);
 			});

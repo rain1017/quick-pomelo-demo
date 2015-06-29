@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var consts = require('../consts');
-var logger = require('pomelo-logger').getLogger('area', __filename);
+var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 module.exports = function(app){
 	var mdbgoose = app.memdb.goose;

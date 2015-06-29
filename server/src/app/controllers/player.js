@@ -3,7 +3,7 @@
 var P = require('bluebird');
 var uuid = require('node-uuid');
 var _ = require('lodash');
-var logger = require('pomelo-logger').getLogger('player', __filename);
+var logger = require('quick-pomelo').logger.getLogger('player', __filename);
 
 var Controller = function(app){
 	this.app = app;
@@ -14,7 +14,7 @@ var proto = Controller.prototype;
 proto.authAsync = P.coroutine(function*(authInfo){
 	var models = this.app.models;
 	var socialId = new String(authInfo.socialId), socialType = authInfo.socialType;
-	var binding = yield models.Binding.findOneAsync({socialId: socialId, socialType: socialType});
+	var binding = yield models.Binding.findOneReadOnlyAsync({socialId: socialId, socialType: socialType});
 	if(!binding) {
 		return false;
 	}
@@ -32,14 +32,14 @@ proto.createAsync = P.coroutine(function*(opts){
 	var playerId = binding.playerId = player._id = yield this.app.get('redisIdGenerator').nextId('player__id');
 	yield player.saveAsync();
 	yield binding.saveAsync();
-	var channelId = 'p.' + playerId;
+	var channelId = 'p:' + playerId;
 	yield this.app.controllers.push.joinAsync(channelId, playerId);
 	logger.info('createAsync %j => %s', opts, playerId);
 	return playerId;
 });
 
 proto.updateAsync = P.coroutine(function*(playerId, opts){
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -51,7 +51,7 @@ proto.updateAsync = P.coroutine(function*(playerId, opts){
 });
 
 proto.removeAsync = P.coroutine(function*(playerId){
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -61,11 +61,11 @@ proto.removeAsync = P.coroutine(function*(playerId){
 	if(!!player.teamId){
 		yield this.app.controllers.team.quitAsync(player.teamId, playerId);
 	}
-	var channelId = 'p.' + playerId;
+	var channelId = 'p:' + playerId;
 	yield this.app.controllers.push.quitAsync(channelId, playerId);
 	yield player.removeAsync();
 
-	var bindings = yield this.app.models.Binding.findOneAsync({playerId: playerId});
+	var bindings = yield this.app.models.Binding.findReadOnlyAsync({playerId: playerId});
 	for (var i = 0; i < bindings.length; i++) {
 		yield bindings[i].removeAsync();
 	}
@@ -76,7 +76,7 @@ proto.removeAsync = P.coroutine(function*(playerId){
 proto.applyPunishmentAsync = P.coroutine(function*(playerId, punishment){
 	var player;
 	if(_.isNumber(playerId) || _.isString(playerId)) {
-		player = yield this.app.models.Player.findLockedAsync(playerId);
+		player = yield this.app.models.Player.findByIdAsync(playerId);
 	} else {
 		player = playerId;
 	}
@@ -91,7 +91,7 @@ proto.applyPunishmentAsync = P.coroutine(function*(playerId, punishment){
 proto.applyRewardAsync = P.coroutine(function*(playerId, reward){
 	var player;
 	if(_.isNumber(playerId) || _.isString(playerId)) {
-		player = yield this.app.models.Player.findLockedAsync(playerId);
+		player = yield this.app.models.Player.findByIdAsync(playerId);
 	} else {
 		player = playerId;
 	}
@@ -102,7 +102,7 @@ proto.applyRewardAsync = P.coroutine(function*(playerId, reward){
 
 proto.connectAsync = P.coroutine(function*(playerId, connectorId){
 	var oldConnectorId = null;
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -115,7 +115,7 @@ proto.connectAsync = P.coroutine(function*(playerId, connectorId){
 });
 
 proto.disconnectAsync = P.coroutine(function*(playerId){
-	var player = yield this.app.models.Player.findLockedAsync(playerId);
+	var player = yield this.app.models.Player.findByIdAsync(playerId);
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');
 	}
@@ -126,12 +126,12 @@ proto.disconnectAsync = P.coroutine(function*(playerId){
 });
 
 proto.pushAsync = P.coroutine(function*(playerId, route, msg, persistent){
-	var channelId = 'p.' + playerId;
+	var channelId = 'p:' + playerId;
 	yield this.app.controllers.push.pushAsync(channelId, null, route, msg, persistent);
 });
 
 proto.getMsgsAsync = P.coroutine(function*(playerId, seq, count){
-	var channelId = 'p.' + playerId;
+	var channelId = 'p:' + playerId;
 	return yield this.app.controllers.push.getMsgsAsync(channelId, seq, count);
 });
 

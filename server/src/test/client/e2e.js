@@ -4,7 +4,7 @@ var P = require('bluebird');
 var quick = require('quick-pomelo');
 var should = require('should');
 var consts = require('../../app/consts');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = quick.logger.getLogger('test', __filename);
 
 P.longStackTraces();
 

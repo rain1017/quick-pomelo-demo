@@ -2,9 +2,10 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var _ = require('lodash');
 var consts = require('../app/consts');
-var logger = require('pomelo-logger').getLogger('robot', __filename);
+var quick = require('quick-pomelo');
+var logger = quick.logger.getLogger('robot', __filename);
 
-var goose = require('quick-pomelo/node_modules/memdb/lib/mdbgoose');
+var goose = quick.memdb.goose;
 var app = {memdb: {goose: goose}};
 
 require('../app/models/area')(app);

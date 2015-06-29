@@ -1,6 +1,6 @@
 'use strict';
 var P = require('bluebird');
-var logger = require('pomelo-logger').getLogger('player', __filename);
+var logger = require('quick-pomelo').logger.getLogger('player', __filename);
 
 var Remote = function(app){
 	this.app = app;
@@ -29,7 +29,7 @@ Remote.prototype.login = function(msg, frontendId, cb){
 
 		logger.info('player %s login', playerId);
 		return data;
-	})).nodeify(cb);
+	}), self.app.getServerId()).nodeify(cb);
 };
 
 Remote.prototype.logout = function(playerId, cb) {
@@ -38,7 +38,7 @@ Remote.prototype.logout = function(playerId, cb) {
 	self.app.memdb.goose.transaction(P.coroutine(function*(){
 		yield controllers.player.disconnectAsync(playerId);
 		logger.info('player %s logout', playerId);
-    })).nodeify(cb);
+    }), self.app.getServerId()).nodeify(cb);
 };
 
 
