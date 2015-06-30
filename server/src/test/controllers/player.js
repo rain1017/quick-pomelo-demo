@@ -6,8 +6,12 @@ var consts = require('../../app/consts');
 var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('player test', function(){
-	beforeEach(env.beforeEach);
-	afterEach(env.afterEach);
+    beforeEach(function(cb){
+        env.initMemdb().nodeify(cb);
+    });
+    afterEach(function(cb){
+        env.closeMemdb().nodeify(cb);
+    });
 
 	it('create/remove/connect/disconnect', function(cb){
 		var app = env.createApp('player-server-1', 'player');

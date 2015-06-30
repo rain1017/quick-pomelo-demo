@@ -105,8 +105,8 @@ exp.routes = {
 };
 
 exp.play = {
-	WAIT_TIME: 5,
-	SERVER_TIME_DELAY: 2,
+	WAIT_TIME: 5000,
+	SERVER_TIME_DELAY: 2000,
 };
 
 exp.resp = {

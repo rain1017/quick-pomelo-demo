@@ -8,7 +8,6 @@ var formula = require('../formula/formula');
 var cardFormula = require('../formula/cardFormula');
 var consts = require('../consts');
 var resp = require('../resp');
-var timer = require('../timer/timer');
 var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 var Controller = function(app){
@@ -48,9 +47,9 @@ proto.dealCardsAsync = P.coroutine(function*(areaId){
 
 	var nextPlayerId = area.playerIds[area.lastTurn];
 	var timerId = util.format('area-timeoutchooselord-%s-%s', areaId, nextPlayerId);
-	timer.getTimerManager(this.app).delay(timerId, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, function(){
+	this.app.timer.setTimeout(function(){
 		return self._timeoutChooseLordAsync(areaId, nextPlayerId);
-	});
+	}, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, timerId);
 
 	logger.info('game.dealCardsAsync: areaId=%s', areaId);
 });
@@ -128,9 +127,9 @@ proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 			yield this.app.controllers.area.pushAsync(areaId, area.farmerPlayerIds(), consts.routes.client.area.LORD_CHOOSED, msg);
 			var playingPlayerId = landlord.playerId;
 			timerId = util.format('area-timeoutplay-%s-%s', areaId, playingPlayerId);
-			timer.getTimerManager(this.app).delay(timerId, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, function(){
+			this.app.timer.setTimeout(function(){
 				return self._timeoutPlayAsync(areaId, playingPlayerId);
-			});
+			}, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, timerId);
 			yield landlord.saveAsync();
 		} else {
 			area.initChoosingLord();
@@ -147,14 +146,14 @@ proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 		};
 		var nextPlayerId = area.playerIds[area.lastTurn];
 		timerId = util.format('area-timeoutchooselord-%s-%s', areaId, nextPlayerId);
-		timer.getTimerManager(this.app).delay(timerId, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, function(){
+		this.app.timer.setTimeout(function(){
 			return self._timeoutChooseLordAsync(areaId, nextPlayerId);
-		});
+		}, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, timerId);
 	}
 	yield area.saveAsync();
 
 	timerId = util.format('area-timeoutchooselord-%s-%s', areaId, playerId);
-	timer.getTimerManager(this.app).cancel(timerId);
+	this.app.timer.clear(timerId);
 
 	return resp.successResp();
 });
@@ -230,16 +229,16 @@ proto.playAsync = P.coroutine(function*(areaId, playerId, cards){
 		// wait for next one play
 		var nextPlayerId = area.playerIds[area.lastTurn];
 		timerId = util.format('area-timeoutplay-%s-%s', areaId, nextPlayerId);
-		timer.getTimerManager(this.app).delay(timerId, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, function(){
+		this.app.timer.setTimeout(function(){
 			return self._timeoutPlayAsync(areaId, nextPlayerId);
-		});
+		}, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, timerId);
 	}
 
 	yield area.saveAsync();
 	yield areaPlayer.saveAsync();
 
 	timerId = util.format('area-timeoutplay-%s-%s', areaId, playerId);
-	timer.getTimerManager(this.app).cancel(timerId);
+	this.app.timer.clear(timerId);
 
 	return resp.successResp();
 });
@@ -288,11 +287,11 @@ proto._onWinAsync = P.coroutine(function*(area, winner){
 
 		// set ready timeout for all
 		timerId = util.format('area-timeoutready-%s-%s', areaId, playerId);
-		timer.getTimerManager(this.app).delay(timerId, consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, (function(areaId, playerId){
+		this.app.timer.setTimeout((function(areaId, playerId){
 			return function(){
 				return self._timeoutReadyAsync(areaId, playerId);
 			};
-		})(areaId, playerId)); //jshint ignore:line
+		})(areaId, playerId), consts.play.WAIT_TIME + consts.play.SERVER_TIME_DELAY, timerId); //jshint ignore:line
 	}
 
 });

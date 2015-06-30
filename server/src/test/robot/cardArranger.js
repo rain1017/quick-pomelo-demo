@@ -4,7 +4,7 @@ var P = require('bluebird');
 var should = require('should');
 var consts = require('../../app/consts');
 var cardArranger = require('../../robot/cardArranger');
-var logger = require('pomelo-logger').getLogger('test', __filename);
+var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('cardArranger', function(){
 
@@ -24,24 +24,24 @@ describe('cardArranger', function(){
 
 	it('_findMulti', function(cb){
 		var cards = [0, 0, 2, 2, 5, 5, 5, 7, 7, 7, 7, 9], found;
-		var found = cardArranger._findMulti(cards, 2);
+		found = cardArranger._findMulti(cards, 2);
 		found.should.eql([0, 2, 5, 7]);
-		var found = cardArranger._findMulti(cards, 3);
+		found = cardArranger._findMulti(cards, 3);
 		found.should.eql([5, 7]);
-		var found = cardArranger._findMulti(cards, 4);
+		found = cardArranger._findMulti(cards, 4);
 		found.should.eql([7]);
-		var found = cardArranger._findMulti(cards, 1);
+		found = cardArranger._findMulti(cards, 1);
 		found.should.eql([0, 2, 5, 7, 9]);
 		cb();
 	});
 
 	it('_findStraits', function(cb){
 		var cards = [0, 0, 2, 2, 3, 3, 3, 3, 4, 4, 6, 6, 6, 7, 8, 9, 10, 11, 12, 13], found;
-		var found = cardArranger._findStraits(cards, 5);
+		found = cardArranger._findStraits(cards, 5);
 		found.should.eql([[6, 7, 8, 9, 10]]);
-		var found = cardArranger._findStraits(cards, 3, true);
+		found = cardArranger._findStraits(cards, 3, true);
 		found.should.eql([[2, 3, 4]]);
-		var found = cardArranger._findStraits(cards, 3);
+		found = cardArranger._findStraits(cards, 3);
 		found.should.eql([[2, 3, 4], [6, 7, 8], [9, 10, 11]]);
 		cb();
 	});
@@ -50,7 +50,7 @@ describe('cardArranger', function(){
 		var cards = [0, 0, 2, 2, 3, 3, 3, 3, 4, 4, 6, 6, 6, 7, 8, 9, 10, 11, 12, 13], found;
 		var removed = cardArranger._removeValues(cards, [0, 3, 4]);
 		removed.should.eql([2, 2, 6, 6, 6, 7, 8, 9, 10, 11, 12, 13]);
-		var removed = cardArranger._removeValues(cards, [0, 3, 4], true);
+		removed = cardArranger._removeValues(cards, [0, 3, 4], true);
 		removed.should.eql([0, 2, 2, 3, 3, 3, 4, 6, 6, 6, 7, 8, 9, 10, 11, 12, 13]);
 		cb();
 	});
@@ -116,13 +116,13 @@ describe('cardArranger', function(){
 		cardArranger._addToIdxs(idxs, 0, 3);
 		idxs.should.eql([0,0,0,1,2,3,5,7]);
 
-		var idxs = [1,2,3,5,7];
+		idxs = [1,2,3,5,7];
 		cardArranger._addToIdxs(idxs, 2, 3);
 		idxs.should.eql([1,2,2,2,2,3,5,7]);
-		var idxs = [1,2,3,5,7];
+		idxs = [1,2,3,5,7];
 		cardArranger._addToIdxs(idxs, 4, 3);
 		idxs.should.eql([1,2,3,4,4,4,5,7]);
-		var idxs = [1,2,3,5,7];
+		idxs = [1,2,3,5,7];
 		cardArranger._addToIdxs(idxs, 10, 3);
 		idxs.should.eql([1,2,3,5,7,10,10,10]);
 		cb();

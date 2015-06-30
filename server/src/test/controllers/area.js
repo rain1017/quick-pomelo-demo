@@ -4,12 +4,15 @@ var P = require('bluebird');
 var env = require('../env');
 var should = require('should');
 var consts = require('../../app/consts');
-var timer = require('../../app/timer/timer');
 var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('area test', function(){
-	beforeEach(env.beforeEach);
-	afterEach(env.afterEach);
+    beforeEach(function(cb){
+        env.initMemdb().nodeify(cb);
+    });
+    afterEach(function(cb){
+        env.closeMemdb().nodeify(cb);
+    });
 
 	it('area player create/connect/join/quit/remove/getPlayers test', function(cb){
 		var app = env.createApp('area-server-1', 'area');
@@ -54,7 +57,7 @@ describe('area test', function(){
 				players.length.should.eql(0);
 				should.not.exist(yield app.models.Area.findById(areaId));
 
-				timer.getTimerManager(app).cancelAll();
+				app.timer.clearAll();
 			}), app.getServerId());
 
 			yield P.promisify(app.stop, app)();
@@ -131,7 +134,7 @@ describe('area test', function(){
 				area = yield app.models.Area.findById(areaId);
 				area.state.should.eql(consts.gameState.waitToStart);
 
-				timer.getTimerManager(app).cancelAll();
+				app.timer.clearAll();
 			}), app.getServerId());
 			yield P.promisify(app.stop, app)();
 		})()

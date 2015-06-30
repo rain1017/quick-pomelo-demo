@@ -358,9 +358,10 @@ exp.arrangeCards = function(cards, sorted) {
 	var trios = [], solos = [], pairs = [], straights = [], bombs = [];
 	cards = sorted ? cards : exp.sortCards(cards, true);
 	var ps = cards.map(exp._toPointIdx);
-	for (var i = 0; i < ps.length; i++) {
-		ps[i]
-	}
+	// TODO:
+	// for (var i = 0; i < ps.length; i++) {
+	// 	ps[i]
+	// }
 };
 
 

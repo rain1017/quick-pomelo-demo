@@ -38,9 +38,9 @@ app.configure('all', function() {
     app.load(quick.components.memdb);
     app.load(quick.components.controllers);
     app.load(quick.components.routes);
+    app.load(quick.components.timer);
 
 	app.load(require('./app/components/areaSearcher'));
-	app.load(require('./app/components/timer'));
 
     // Configure logger
     var loggerConfig = app.getBase() + '/config/log4js.json';

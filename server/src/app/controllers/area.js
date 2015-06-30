@@ -6,7 +6,6 @@ var _ = require('lodash');
 var util = require('util');
 var consts = require('../consts');
 var resp = require('../resp');
-var timer = require('../timer/timer');
 var formula = require('../formula/formula');
 var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
@@ -197,7 +196,7 @@ proto.readyAsync = P.coroutine(function*(areaId, playerId){
 	}
 
 	var timerId = util.format('area-timeoutready-%s-%s', areaId, playerId);
-	timer.getTimerManager(this.app).cancel(timerId);
+	this.app.timer.clear(timerId);
 });
 
 proto.quitAsync = P.coroutine(function*(areaId, playerId){
