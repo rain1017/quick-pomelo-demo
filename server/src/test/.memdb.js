@@ -5,20 +5,20 @@
 module.exports = {
     backend : {
         engine : 'mongodb',
-        url : 'mongodb://localhost/quick-pomelo-demo-test',
+        url : 'mongodb://localhost/ddz-test',
         options : {},
     },
 
     locking : {
         host : '127.0.0.1',
         port : 6379,
-        db : 1,
+        db : 2,
     },
 
     slave : {
         host : '127.0.0.1',
         port : 6379,
-        db : 1,
+        db : 2,
     },
 
     log : {

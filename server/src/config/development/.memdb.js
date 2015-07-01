@@ -12,7 +12,7 @@ module.exports = {
 	// Global backend storage, all shards must connect to the same mongodb (cluster)
 	backend : {
 		engine : 'mongodb', // should be 'mongodb'
-		url : 'mongodb://localhost/quick-pomelo-demo', // mongodb connect string
+		url : 'mongodb://localhost/ddz-dev', // mongodb connect string
 		options : {}, // mongodb connect options
 	},
 
@@ -20,7 +20,7 @@ module.exports = {
 	locking : {
 		host : '127.0.0.1',
 		port : 6379,
-		db : 0,
+		db : 1,
 	},
 
 	// Data replication redis, one redis instance for each shard
@@ -28,7 +28,7 @@ module.exports = {
 	slave : {
 		host : '127.0.0.1',
 		port : 6379,
-		db : 0,
+		db : 1,
 	},
 
 	// Log settings
@@ -52,7 +52,7 @@ module.exports = {
 	user : process.env.USER,
 
 	// Collection settings (for index), modify it on your need
-	collections : require('./.memdb.index'),
+	collections : require('../.memdb.index'),
 
 
 	// *** Shard specific settings ***

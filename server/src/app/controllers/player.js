@@ -14,7 +14,7 @@ var proto = Controller.prototype;
 proto.authAsync = P.coroutine(function*(authInfo){
 	var models = this.app.models;
 	var socialId = String(authInfo.socialId), socialType = authInfo.socialType;
-	var binding = yield models.Binding.findOneReadOnlyAsync({socialId: socialId, socialType: socialType});
+	var binding = yield models.Binding.findOneAsync({socialId: socialId, socialType: socialType});
 	if(!binding) {
 		return false;
 	}
@@ -65,10 +65,7 @@ proto.removeAsync = P.coroutine(function*(playerId){
 	yield this.app.controllers.push.quitAsync(channelId, playerId);
 	yield player.removeAsync();
 
-	var bindings = yield this.app.models.Binding.findReadOnlyAsync({playerId: playerId});
-	for (var i = 0; i < bindings.length; i++) {
-		yield bindings[i].removeAsync();
-	}
+	yield this.app.models.Binding.removeAsync({playerId: playerId});
 
 	logger.info('removeAsync %s', playerId);
 });

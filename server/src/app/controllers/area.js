@@ -49,8 +49,8 @@ proto.removeAsync = P.coroutine(function*(areaId){
 	if(!area){
 		throw new Error('area ' + areaId + ' not exist');
 	}
-	var players = yield this.getPlayersAsync(areaId);
-	if(players.length > 0){
+	var playerIds = area.playerIds.filter((playerId) => playerId !== null);
+	if(playerIds.length > 0){
 		throw new Error('area is not empty');
 	}
 	yield area.removeAsync();
@@ -99,7 +99,7 @@ proto.connectAsync = P.coroutine(function*(playerId, areaId) {
 
 proto.disconnectAsync = P.coroutine(function*(playerId, areaId){
 	// TODO: playing -> let a robot to replace the player, waitToStart -> area.quit
-	var area = yield this.app.models.Area.findByIdReadOnlyAsync(areaId);
+	var area = yield this.app.models.Area.findByIdAsync(areaId);
 	if(_.indexOf(area.playerIds, playerId) === -1) {
 		throw new Error(util.format('player not exist in area: areaId=%s, playerId=%s', areaId, playerId));
 	}
@@ -114,7 +114,18 @@ proto.disconnectAsync = P.coroutine(function*(playerId, areaId){
 });
 
 proto.getPlayersAsync = P.coroutine(function*(areaId){
-	return yield this.app.models.Player.findReadOnlyAsync({areaId: areaId});
+	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
+	if(!area){
+		throw new Error('area ' + areaId + ' not exist');
+	}
+	var players = [];
+
+	for(let playerId of area.playerIds){
+		if(playerId !== null){
+			players.push(yield this.app.models.Player.findByIdAsync(playerId));
+		}
+	}
+	return players;
 });
 
 proto.joinAsync = P.coroutine(function*(areaId, playerId){
@@ -200,11 +211,8 @@ proto.readyAsync = P.coroutine(function*(areaId, playerId){
 });
 
 proto.quitAsync = P.coroutine(function*(areaId, playerId){
-	logger.debug('check domain1');
 	var player = _.isNumber(playerId) || _.isString(playerId) ? yield this.app.models.Player.findByIdAsync(playerId) : playerId;
-	logger.debug('check domain2');
 	var area = _.isString(areaId) ? yield this.app.models.Area.findByIdAsync(areaId) : areaId;
-	logger.debug('check domain3');
 	var i;
 	if(!player){
 		throw new Error('player ' + playerId + ' not exist');

@@ -53,8 +53,6 @@ describe('area test', function(){
 				yield areaController.quitAsync(areaId, playerId);
 				yield playerController.removeAsync(playerId);
 
-				players = yield areaController.getPlayersAsync(areaId);
-				players.length.should.eql(0);
 				should.not.exist(yield app.models.Area.findById(areaId));
 
 				app.timer.clearAll();

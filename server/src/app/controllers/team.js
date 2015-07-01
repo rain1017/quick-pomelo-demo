@@ -33,17 +33,13 @@ proto.removeAsync = P.coroutine(function*(teamId){
 	if(!team){
 		throw new Error('team ' + teamId + ' not exist');
 	}
-	var players = yield this.getPlayersAsync(teamId);
-	if(players.length > 0){
+	var playerIds = team.playerIds.filter((playerId) => playerId !== null);
+	if(playerIds.length > 0){
 		throw new Error('team is not empty');
 	}
 	yield team.removeAsync();
 	logger.info('team.removeAsync: teamId=%s', teamId);
 	// TODO: stop timer
-});
-
-proto.getPlayersAsync = P.coroutine(function*(teamId){
-	return yield this.app.models.Player.findReadOnlyAsync({teamId: teamId});
 });
 
 proto.joinAsync = P.coroutine(function*(teamId, playerId){
@@ -110,6 +106,22 @@ proto.quitAsync = P.coroutine(function*(teamId, playerId){
 	}
 	logger.info('team.quitAsync: playerId=%s, teamId=%s', playerId, teamId);
 });
+
+proto.getPlayersAsync = P.coroutine(function*(teamId){
+	var team = _.isString(teamId) ? yield this.app.models.Team.findByIdAsync(teamId) : teamId;
+	if(!team){
+		throw new Error('team ' + teamId + ' not exist');
+	}
+	var players = [];
+	var self = this;
+	for(let playerId of team.playerIds){
+		if(playerId !== null){
+			players.push(yield this.app.models.Player.findByIdAsync(playerId));
+		}
+	}
+	return players;
+});
+
 /**
  * playerIds - [playerId], set null to push all
  */

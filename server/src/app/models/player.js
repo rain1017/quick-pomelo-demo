@@ -8,8 +8,8 @@ module.exports = function(app){
 
 	var playerSchema = new mdbgoose.Schema({
 		_id : {type : Number},
-		areaId : {type : String, index : true},
-		teamId : {type : String, index : true},
+		areaId : {type : String},
+		teamId : {type : String},
 		connectorId : {type : String},
 		name : {type : String, default: ''},
         sex : {type : Number, default: consts.sex.MALE, validate: function(val){

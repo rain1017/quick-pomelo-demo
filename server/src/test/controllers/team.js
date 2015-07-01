@@ -52,7 +52,7 @@ describe('team test', function(){
 
 				players = yield teamController.getPlayersAsync(teamId);
 				players.length.should.eql(1);
-				should.not.exist(yield app.models.Area.findByIdAsync(teamId));
+
 			}), app.getServerId());
 
 			yield P.promisify(app.stop, app)();

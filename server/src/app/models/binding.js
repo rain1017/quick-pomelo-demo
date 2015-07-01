@@ -9,7 +9,7 @@ module.exports = function(app){
 	var bindingSchema = new mdbgoose.Schema({
 		_id : {type : String},
 		playerId : {type : Number, index : true},
-		socialId : {type : String, index : true},
+		socialId : {type : String},
 		socialType : {type : Number, validate: function(val){
 			return _.indexOf(_.values(consts.binding.types), val) !== -1;
 		}},
