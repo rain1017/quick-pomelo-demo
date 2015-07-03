@@ -3,13 +3,11 @@
 var route = {};
 
 route.handler = function(session, method, msg){
-	//return msg.areaId;
-	return 1;
+	return msg.areaId;
 };
 
 route.remote = function(routeParam, method, args){
-	//return routeParam;
-	return 1;
+	return routeParam;
 };
 
 module.exports = route;

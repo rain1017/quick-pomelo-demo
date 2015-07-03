@@ -49,7 +49,7 @@ module.exports = function(grunt) {
 			dev: {
 				script: 'app.js',
 				options: {
-					nodeArgs: ['--debug'],
+					nodeArgs: ['--debug', '--harmony'],
 					ext: 'js,html',
 					watch: watchFiles.serverJS
 				}

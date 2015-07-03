@@ -36,11 +36,9 @@ proto.login = function(msg, session, next){
 				return;
 			}
 			// auto logout on disconnect
-			self.app.memdb.goose.transaction(function(){
-				return P.promisify(self.logout, self)({closed : true}, session);
-			}, self.app.getServerId())
+			P.promisify(self.logout, self)({closed : true}, session)
 			.catch(function(e){
-				logger.warn(e);
+				logger.warn(e.stack);
 			});
 		});
 

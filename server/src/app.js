@@ -31,16 +31,10 @@ app.configure('all', function() {
 		timeout : 10 * 1000,
 	});
 
-    // Configure memdb
-    app.loadConfigBaseApp('memdbConfig', 'memdb.json');
-
-    // Load components
-    app.load(quick.components.memdb);
+	// Load route component
+	app.load(quick.components.routes);
+	// Load controller component
     app.load(quick.components.controllers);
-    app.load(quick.components.routes);
-    app.load(quick.components.timer);
-
-	app.load(require('./app/components/areaSearcher'));
 
     // Configure logger
     var loggerConfig = app.getBase() + '/config/log4js.json';
@@ -50,15 +44,11 @@ app.configure('all', function() {
     };
     quick.logger.configure(loggerConfig, loggerOpts);
 
-    // Configure filter
-    app.filter(quick.filters.transaction(app));
-
 	// Add beforeStop hook
 	app.lifecycleCbs[pomeloConstants.LIFECYCLE.BEFORE_SHUTDOWN] = function(app, shutdown, cancelShutDownTimer){
 		cancelShutDownTimer();
 
 		if(app.getServerType() === 'master'){
-
 			// Wait for all server stop
 			var tryShutdown = function(){
 				if(Object.keys(app.getServers()).length === 0){
@@ -83,15 +73,9 @@ app.configure('all', function() {
 		};
 		cb(err, resp);
 	});
-
-	// Configure redis-id-generator
-	app.loadConfigBaseApp('redisIdGeneratorConfig', 'redisIdGenerator.json');
-	var idgen = new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis);
-	idgen.initKey('player__id', 0, 1);
-	app.set('redisIdGenerator', idgen);
 });
 
-//Connector settings
+// Connector settings
 app.configure('all', 'gate|connector', function() {
 	app.set('connectorConfig', {
 		connector : pomelo.connectors.hybridconnector,
@@ -102,6 +86,32 @@ app.configure('all', 'gate|connector', function() {
 		singleSession : true,
 	});
 });
+
+// Config backend servers
+app.configure('all', 'player|area|team', function(){
+	// Load memdb config
+    app.loadConfigBaseApp('memdbConfig', 'memdb.json');
+    // Load memdb component
+    app.load(quick.components.memdb);
+    // Load timer component
+    app.load(quick.components.timer);
+
+    // Add transaction filter
+    app.filter(quick.filters.transaction(app));
+
+	// Configure redis-id-generator
+	app.loadConfigBaseApp('redisIdGeneratorConfig', 'redisIdGenerator.json');
+	var idgen = new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis);
+	idgen.initKey('player__id', 0, 1);
+	app.set('redisIdGenerator', idgen);
+});
+
+// Config area server
+app.configure('all', 'area', function(){
+	// Load areaSearcher component
+	app.load(require('./app/components/areaSearcher'));
+});
+
 
 app.configure('development', function(){
     require('heapdump');

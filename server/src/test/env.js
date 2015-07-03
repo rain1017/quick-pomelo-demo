@@ -7,7 +7,26 @@ var path = require('path');
 var quick = require('quick-pomelo');
 var RedisIDGenerator = require('redis-id-generator');
 var redis = require('redis');
+var child_process = require('child_process');
 var logger = quick.logger.getLogger('test', __filename);
+
+var memdbClusterPath = '/usr/local/bin/memdbcluster';
+
+var execMemdbClusterSync = function(cmd){
+    var configPath = path.join(__dirname, '.memdb.js');
+    var output = child_process.execFileSync(process.execPath, [memdbClusterPath, cmd, '--conf=' + configPath]);
+    logger.info(output.toString());
+};
+
+exports.initMemdbSync = function(){
+    execMemdbClusterSync('drop');
+    execMemdbClusterSync('start');
+};
+
+exports.closeMemdbSync = function(){
+    execMemdbClusterSync('stop');
+};
+
 
 var memdbClientConfig = {
     shards : {
@@ -47,14 +66,3 @@ exports.createApp = function(serverId, serverType){
 
     return app;
 };
-
-var memdbLauncher = new quick.memdb.test.Launcher({conf : path.join(__dirname, '.memdb.js')});
-
-exports.initMemdb = P.coroutine(function*(){
-    yield memdbLauncher.flushdb();
-    yield memdbLauncher.startCluster();
-});
-
-exports.closeMemdb = P.coroutine(function*(){
-    yield memdbLauncher.stopCluster();
-});

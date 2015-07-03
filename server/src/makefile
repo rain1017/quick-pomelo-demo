@@ -1,7 +1,4 @@
 SHELL=/bin/bash
 
 clean-dev:
-	mongo ddz-dev --eval "db.dropDatabase()"
-	echo -e 'select 1\nflushall' | redis-cli
-
-
+	memdbcluster drop -c ./config/development/.memdb.js

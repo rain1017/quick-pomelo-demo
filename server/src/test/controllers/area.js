@@ -7,12 +7,8 @@ var consts = require('../../app/consts');
 var logger = require('quick-pomelo').logger.getLogger('test', __filename);
 
 describe('area test', function(){
-    beforeEach(function(cb){
-        env.initMemdb().nodeify(cb);
-    });
-    afterEach(function(cb){
-        env.closeMemdb().nodeify(cb);
-    });
+    beforeEach(env.initMemdbSync);
+    afterEach(env.closeMemdbSync);
 
 	it('area player create/connect/join/quit/remove/getPlayers test', function(cb){
 		var app = env.createApp('area-server-1', 'area');

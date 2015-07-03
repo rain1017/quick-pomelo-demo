@@ -1,17 +1,5 @@
 {
     "shards" : {
-        "gate-server" : {
-            "host" : "127.0.0.1",
-            "port" : 31017
-        },
-        "connector-server-1" : {
-            "host" : "127.0.0.1",
-            "port" : 31017
-        },
-        "connector-server-2" : {
-            "host" : "127.0.0.1",
-            "port" : 31018
-        },
         "player-server-1" : {
             "host" : "127.0.0.1",
             "port" : 31017

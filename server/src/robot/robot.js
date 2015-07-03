@@ -213,7 +213,7 @@ proto.onGameOver = P.coroutine(function*(msg) {
 global.config = {
 	host: '127.0.0.1',
 	port: 3010,
-	deviceid: process.argv[2],
+	deviceid: process.argv[2] || '',
 }
 
 console.log('argv: %j', process.argv);
