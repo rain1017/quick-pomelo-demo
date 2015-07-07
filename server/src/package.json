@@ -28,7 +28,7 @@
     "heapdump": "~0.3.4",
     "lodash": "~3.2.0",
     "node-uuid": "^1.4.3",
-    "pomelo": "~1.1.3",
+    "pomelo": "~1.1.9",
     "pomelo-cli": "~0.1.2",
     "redis-id-generator": "gmlove/redis-id-generator"
   },

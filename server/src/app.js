@@ -15,8 +15,8 @@ app.set('name', 'quick-pomelo');
 // configure for global
 app.configure('all', function() {
 
+	// Pomelo configures
 	app.enable('systemMonitor');
-
 	app.set('proxyConfig', {
 		cacheMsg : true,
 		interval : 30,
@@ -24,12 +24,12 @@ app.configure('all', function() {
 		timeout : 10 * 1000,
 		failMode : 'failfast',
 	});
-
 	app.set('remoteConfig', {
 		cacheMsg : true,
 		interval : 30,
 		timeout : 10 * 1000,
 	});
+    app.filter(pomelo.filters.serial());
 
 	// Load route component
 	app.load(quick.components.routes);
@@ -101,9 +101,7 @@ app.configure('all', 'player|area|team', function(){
 
 	// Configure redis-id-generator
 	app.loadConfigBaseApp('redisIdGeneratorConfig', 'redisIdGenerator.json');
-	var idgen = new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis);
-	idgen.initKey('player__id', 0, 1);
-	app.set('redisIdGenerator', idgen);
+	app.set('redisIdGenerator', new RedisIDGenerator(app.get('redisIdGeneratorConfig').redis));
 });
 
 // Config area server

@@ -134,6 +134,9 @@ proto.chooseLordAsync = P.coroutine(function*(areaId, playerId, choosed){
 		} else {
 			area.initChoosingLord();
 			yield this.dealCardsAsync(area);
+
+			yield area.saveAsync();
+			return resp.successResp();
 		}
 	} else {
 		msg = {

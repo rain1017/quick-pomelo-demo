@@ -1,3 +1,5 @@
+'use strict';
+
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var _ = require('lodash');
@@ -90,7 +92,7 @@ proto.updateModel = function (name, model, data) {
 		} else if(key == 'id') {
 			model._id = value;
 		} else {
-			logger.info('no path found for model[%s]: path=%s', name, key);
+			logger.debug('no path found for model[%s]: path=%s', name, key);
 		}
 	});
 };

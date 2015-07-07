@@ -52,7 +52,7 @@ proto.run = function(){
 		client = self.client = quick.mocks.client(connectorServer.data);
 		yield client.connect();
 
-		// set lisenters for server message
+		// set listeners for server message
 		client.on(consts.routes.client.pomelo.DISCONNECT, self.onDisconnect.bind(self));
 		client.on(consts.routes.client.pomelo.TIMEOUT, self.onTimeout.bind(self));
 		client.on(consts.routes.client.pomelo.ON_KICK, self.onKick.bind(self));
@@ -123,7 +123,6 @@ proto.joinArea = P.coroutine(function*(){
 });
 
 proto.onDisconnect = proto.onTimeout = proto.onKick = P.coroutine(function*(msg) {
-	msg = msg.msg;
 	this.status = 'stopped';
 	logger.info('player robot stopped: %s', this.modelStore.me.id);
 	this.emit('stoped');
@@ -139,6 +138,7 @@ proto.onStart = proto.onChooseLord = P.coroutine(function*(msg) {
 	if(msg.route == consts.routes.client.area.CHOOSE_LORD) {
 		this.ai.emit('chooseLord', msg.msg.playerId, msg.msg.choosed);
 	}
+
 	msg = msg.msg;
 	var client = this.client, modelStore = this.modelStore, ai = this.ai;
 	this.modelStore.updateModels(msg);
@@ -187,8 +187,10 @@ proto.onLordChoosed = proto.onPlay = P.coroutine(function*(msg) {
 	logger.debug('playingPlayerId: %s, me.id=%s', modelStore.area.playingPlayerId(), modelStore.me.id);
 	if(modelStore.me.id == modelStore.area.playingPlayerId()) {
 		yield P.delay(randomTime(TEST_WAIT_TIME));
-		let msg = {areaId: modelStore.area.id, cards: ai.shouldPlay()};
-		yield client.request(consts.routes.server.area.PLAY, msg);
+		if(!!modelStore.area){
+			let msg = {areaId: modelStore.area.id, cards: ai.shouldPlay()};
+			yield client.request(consts.routes.server.area.PLAY, msg);
+		}
 	}
 });
 

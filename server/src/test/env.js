@@ -46,7 +46,7 @@ var memdbClientConfig = {
 };
 
 exports.redisIdGeneratorConfig = {
-	redis : {host : '127.0.0.1', port : 6379, db : 1},
+	redis : {host : '127.0.0.1', port : 6379, db : 2},
 };
 
 exports.createApp = function(serverId, serverType){
