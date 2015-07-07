@@ -1,0 +1,12 @@
+{
+    "name": "ddz-robot",
+    "version": "0.1.0",
+    "dependencies": {
+        "quick-pomelo": "rain1017/quick-pomelo",
+        "bluebird": "~2.9.24",
+        "lodash": "~3.2.0",
+        "node-getopt": "~0.2.3",
+        "node-uuid": "~1.4.3",
+        "pomelo-robot": "~0.1.4"
+    }
+}

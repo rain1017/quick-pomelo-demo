@@ -6,10 +6,8 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var AI = require('./ai');
 var ModelStore = require('./modelStore');
-var consts = require('../app/consts');
+var consts = require('../../game-server/app/consts');
 var logger = quick.logger.getLogger('robot', __filename);
-
-P.longStackTraces();
 
 var randomTime = function (min, max) {
 	if(!max) {
@@ -21,7 +19,9 @@ var randomTime = function (min, max) {
 
 var TEST_WAIT_TIME = 3;
 
-function Robot() {
+function Robot(opts) {
+	opts = opts || {};
+
 	this.modelStore = new ModelStore();
 	this.ai = new AI(this.modelStore);
 	this.client = null;
@@ -31,6 +31,12 @@ function Robot() {
 	this.on('run', this.run.bind(this));
 	this.on('stop', this.stop.bind(this));
 	this.on('stoped', this.onRobotStoped.bind(this));
+
+	this.config = {
+		host : opts.host || '127.0.0.1',
+		port : opts.port || 3010,
+		deviceid : opts.deviceid || '',
+	};
 }
 
 util.inherits(Robot, EventEmitter);
@@ -39,7 +45,7 @@ var proto = Robot.prototype;
 
 
 proto.run = function(){
-	var gateServer = {host : global.config.host, port : global.config.port};
+	var gateServer = {host : this.config.host, port : this.config.port};
 	var playerId, areaId, ai = this.ai, self = this, modelStore = this.modelStore;
 
 	P.coroutine(function*(){
@@ -66,7 +72,7 @@ proto.run = function(){
 		client.on(consts.routes.client.area.GAME_OVER, self.onGameOver.bind(self));
 
 		// login and update data
-		var authInfo = {socialId : global.config.deviceid, socialType: consts.binding.types.DEVICE};
+		var authInfo = {socialId : self.config.deviceid, socialType: consts.binding.types.DEVICE};
 		var loginData = yield client.request(consts.routes.server.connector.LOGIN, {authInfo : authInfo});
 		modelStore.updateModelMe(loginData.data);
 
@@ -211,16 +217,4 @@ proto.onGameOver = P.coroutine(function*(msg) {
 	}
 });
 
-
-global.config = {
-	host: '127.0.0.1',
-	port: 3010,
-	deviceid: process.argv[2] || '',
-}
-
-console.log('argv: %j', process.argv);
-var robot = global.robot = new Robot();
-robot.emit('run');
-
-
-
+module.exports = Robot;

@@ -3,16 +3,16 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var _ = require('lodash');
-var consts = require('../app/consts');
+var consts = require('../../game-server/app/consts');
 var quick = require('quick-pomelo');
 var logger = quick.logger.getLogger('robot', __filename);
 
 var goose = quick.memdb.goose;
 var app = {memdb: {goose: goose}};
 
-require('../app/models/area')(app);
-require('../app/models/areaPlayer')(app);
-require('../app/models/player')(app);
+require('../../game-server/app/models/area')(app);
+require('../../game-server/app/models/areaPlayer')(app);
+require('../../game-server/app/models/player')(app);
 
 var Area = goose.model('Area');
 var Player = goose.model('Player');
