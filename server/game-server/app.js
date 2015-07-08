@@ -15,8 +15,8 @@ app.set('name', 'quick-pomelo');
 // configure for global
 app.configure('all', function() {
 
-	// Pomelo configures
 	app.enable('systemMonitor');
+
 	app.set('proxyConfig', {
 		cacheMsg : true,
 		interval : 30,
@@ -24,12 +24,12 @@ app.configure('all', function() {
 		timeout : 10 * 1000,
 		failMode : 'failfast',
 	});
+
 	app.set('remoteConfig', {
 		cacheMsg : true,
 		interval : 30,
 		timeout : 10 * 1000,
 	});
-    app.filter(pomelo.filters.serial());
 
 	// Load route component
 	app.load(quick.components.routes);
@@ -52,7 +52,7 @@ app.configure('all', function() {
 			// Wait for all server stop
 			var tryShutdown = function(){
 				if(Object.keys(app.getServers()).length === 0){
-					shutdown();
+					quick.logger.shutdown(shutdown);
 				}
 				else{
 					setTimeout(tryShutdown, 200);
@@ -62,7 +62,7 @@ app.configure('all', function() {
 			return;
 		}
 
-		shutdown();
+		quick.logger.shutdown(shutdown);
 	};
 
 	app.set('errorHandler', function(err, msg, resp, session, cb){

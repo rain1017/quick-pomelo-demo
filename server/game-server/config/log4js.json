@@ -85,26 +85,6 @@
         },
        	{
             "type": "dateFile",
-            "filename": "${opts:base}/logs/memdb-${opts:serverId}.log",
-            "pattern": "-yyyyMMdd",
-            "layout": {
-                "type": "basic"
-              }
-            ,"backups": 5,
-            "category":"memdb"
-        },
-        {
-            "type": "dateFile",
-            "filename": "${opts:base}/logs/memdb-client-${opts:serverId}.log",
-            "pattern": "-yyyyMMdd",
-            "layout": {
-                "type": "basic"
-              }
-            ,"backups": 5,
-            "category":"memdb-client"
-        },
-       	{
-            "type": "dateFile",
             "filename": "${opts:base}/logs/connector-${opts:serverId}.log",
             "pattern": "-yyyyMMdd",
             "layout": {
@@ -125,6 +105,16 @@
         },
         {
             "type": "dateFile",
+            "filename": "${opts:base}/logs/memdb-client-${opts:serverId}.log",
+            "pattern": "-yyyyMMdd",
+            "layout": {
+                "type": "basic"
+              }
+            ,"backups": 5,
+            "category":"memdb-client"
+        },
+        {
+            "type": "dateFile",
             "filename": "${opts:base}/logs/route-${opts:serverId}.log",
             "pattern": "-yyyyMMdd",
             "layout": {
@@ -142,6 +132,16 @@
               }
             ,"backups": 5,
             "category":"push"
+        },
+        {
+            "type": "dateFile",
+            "filename": "${opts:base}/logs/timer-${opts:serverId}.log",
+            "pattern": "-yyyyMMdd",
+            "layout": {
+                "type": "basic"
+              }
+            ,"backups": 5,
+            "category":"timer"
         },
        	{
             "type": "dateFile",

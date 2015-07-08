@@ -293,6 +293,11 @@ proto.quitAsync = P.coroutine(function*(areaId, playerId){
 		}
 		this.app.areaSearcher.setAreaAvail(area._id);
 	}
+
+	this.app.timer.clear(util.format('area-timeoutchooselord-%s-%s', areaId, playerId));
+	this.app.timer.clear(util.format('area-timeoutplay-%s-%s', areaId, playerId));
+	this.app.timer.clear(util.format('area-timeoutready-%s-%s', areaId, playerId));
+
 	logger.info('area.quitAsync: playerId=%s, areaId=%s', playerId, areaId);
 });
 
