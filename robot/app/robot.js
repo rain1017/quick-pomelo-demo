@@ -4,6 +4,7 @@ var P = require('bluebird');
 var quick = require('quick-pomelo');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
+var uuid = require('node-uuid');
 var AI = require('./ai');
 var ModelStore = require('./modelStore');
 var consts = require('../../game-server/app/consts');
@@ -37,7 +38,7 @@ function Robot(opts) {
 		port : opts.port || 3010,
 		deviceid : opts.deviceid || '',
 	};
-}
+};
 
 util.inherits(Robot, EventEmitter);
 
@@ -56,6 +57,32 @@ proto.run = function(){
 
 		// Connect to connector
 		client = self.client = quick.mocks.client(connectorServer.data);
+
+		// Measure
+		if(global.actor){
+			var originalRequest = client.request;
+			client.request = function(route, msg){
+				var reqId = uuid.v4();
+				global.actor.emit('start', route, reqId);
+
+				return originalRequest.call(client, route, msg)
+				.finally(function(){
+					global.actor.emit('end', route, reqId);
+				});
+			};
+
+			var originalOn = client.on;
+			client.on = function(route, func){
+				originalOn.call(client, route, function(msg){
+					var reqId = uuid.v4();
+					var actionId = 'on:' + route;
+					global.actor.emit('start', actionId, reqId);
+					global.actor.emit('end', actionId, reqId);
+					func(msg);
+				});
+			};
+		}
+
 		yield client.connect();
 
 		// set listeners for server message

@@ -8,6 +8,7 @@ var logger = require('quick-pomelo').logger.getLogger('robot', path.join(global.
 P.try(function(){
 	logger.warn('start actor %s', actor.id);
 
+	global.actor = actor;
 	var robot = new Robot({
 		host : global.config.host,
 		port : global.config.port,

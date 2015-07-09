@@ -24,7 +24,7 @@ function AuthProxy:login()
         local authInfo = {socialId=ddz.state.deviceid, socialType=consts.binding.types.DEVICE};
         rpc:request(consts.routes.server.connector.LOGIN, {authInfo=authInfo}, handler(self, self._onLoginResponse))
     end))
-    rpc:connectGate('172.16.11.8', 3010)
+    rpc:connectGate('127.0.0.1', 3010)
 end
 
 function AuthProxy:_onLoginResponse(msg)

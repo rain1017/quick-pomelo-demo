@@ -37,7 +37,7 @@ module.exports = {
 		path : '/tmp',
 		// Log Level (one of 'ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'OFF')
 		// Please set to WARN on production
-		level : 'INFO',
+		level : 'WARN',
 	},
 
 	// Promise settings
@@ -86,10 +86,10 @@ module.exports = {
 			host : '127.0.0.1',
 			port : 31019,
 		},
-		area2 : {
-			host : '127.0.0.1',
-			port : 31020,
-		},
+		// area2 : {
+		// 	host : '127.0.0.1',
+		// 	port : 31020,
+		// },
 		team1 : {
 			host : '127.0.0.1',
 			port : 31021,

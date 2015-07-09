@@ -112,11 +112,13 @@ app.configure('all', 'area', function(){
 
 
 app.configure('development', function(){
-    require('heapdump');
-    P.longStackTraces();
-    quick.Promise.longStackTraces();
-    quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
-    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
+    // require('heapdump');
+    // P.longStackTraces();
+    // quick.Promise.longStackTraces();
+    // quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
+    // pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
+    quick.logger.setGlobalLogLevel(quick.logger.levels.WARN);
+    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.WARN);
 });
 
 app.configure('production', function(){

@@ -174,7 +174,7 @@ proto.playAsync = P.coroutine(function*(areaId, playerId, cards){
 	playerId = parseInt(playerId);
 	cards = cards.length === undefined ? [] : cards;
 	var area = yield this.app.models.Area.findByIdAsync(areaId);
-	if(!area.isPlayingState() || area.playingPlayerId() !== playerId) {
+	if(!area || !area.isPlayingState() || area.playingPlayerId() !== playerId) {
 		logger.debug('invalid play card action: playerId=%s, playingPlayerId=%s, state=%s',
 			playerId, area.playingPlayerId(), area.state);
 		return resp.errorResp(consts.resp.codes.INVALID_ACTION);
