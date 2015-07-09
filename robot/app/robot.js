@@ -31,7 +31,7 @@ function Robot(opts) {
 
 	this.on('run', this.run.bind(this));
 	this.on('stop', this.stop.bind(this));
-	this.on('stoped', this.onRobotStoped.bind(this));
+	//this.on('stopped', this.onRobotStoped.bind(this));
 
 	this.config = {
 		host : opts.host || '127.0.0.1',
@@ -44,8 +44,9 @@ util.inherits(Robot, EventEmitter);
 
 var proto = Robot.prototype;
 
-
 proto.run = function(){
+	this.status = 'running';
+
 	var gateServer = {host : this.config.host, port : this.config.port};
 	var playerId, areaId, ai = this.ai, self = this, modelStore = this.modelStore;
 
@@ -57,11 +58,16 @@ proto.run = function(){
 
 		// Connect to connector
 		client = self.client = quick.mocks.client(connectorServer.data);
+		process.domain.add(client);
 
 		// Measure
 		if(global.actor){
 			var originalRequest = client.request;
 			client.request = function(route, msg){
+				if(self.status !== 'running'){
+					throw new Error(util.format('robot %s not running', global.actor.id));
+				}
+
 				var reqId = uuid.v4();
 				global.actor.emit('start', route, reqId);
 
@@ -74,11 +80,17 @@ proto.run = function(){
 			var originalOn = client.on;
 			client.on = function(route, func){
 				originalOn.call(client, route, function(msg){
-					var reqId = uuid.v4();
-					var actionId = 'on:' + route;
-					global.actor.emit('start', actionId, reqId);
-					global.actor.emit('end', actionId, reqId);
-					func(msg);
+					P.try(function(){
+						var reqId = uuid.v4();
+						var actionId = 'on:' + route;
+						global.actor.emit('start', actionId, reqId);
+						global.actor.emit('end', actionId, reqId);
+
+						return func(msg);
+					})
+					.catch(function(e){
+						logger.error(e.stack);
+					});
 				});
 			};
 		}
@@ -108,20 +120,16 @@ proto.run = function(){
 			yield client.request(consts.routes.server.player.UPDATE, {opts : {name : 'rain'}});
 		}
 
-		self.joinArea();
+		yield self.joinArea();
 	})()
 	.catch(function(err){
-		logger.error('error occured: ', err);
+		logger.error(err.stack);
 		self.emit('stop');
 	});
 };
 
 proto.stop = function () {
 	this.status = 'stopping';
-};
-
-proto.onRobotStoped = function() {
-	// TODO: notify manager client stopped
 };
 
 proto.joinArea = P.coroutine(function*(){
@@ -157,8 +165,8 @@ proto.joinArea = P.coroutine(function*(){
 
 proto.onDisconnect = proto.onTimeout = proto.onKick = P.coroutine(function*(msg) {
 	this.status = 'stopped';
-	logger.info('player robot stopped: %s', this.modelStore.me.id);
-	this.emit('stoped');
+	logger.info('player robot stopped: %s', this.modelStore.me && this.moduleStore.me.id);
+	this.emit('stopped');
 	this.ai.emit('clean');
 });
 
@@ -174,6 +182,7 @@ proto.onStart = proto.onChooseLord = P.coroutine(function*(msg) {
 
 	msg = msg.msg;
 	var client = this.client, modelStore = this.modelStore, ai = this.ai;
+
 	this.modelStore.updateModels(msg);
 	logger.debug('playingPlayerId: %s, me.id=%s', modelStore.area.playingPlayerId(), modelStore.me.id);
 	if(!modelStore.area.isChoosingLordDone() &&
@@ -196,7 +205,7 @@ proto.onQuit = P.coroutine(function*(msg) {
 			this.status = 'stopped';
 			this.client.disconnect();
 			logger.info('player robot stopped: %s', this.modelStore.me.id);
-			this.emit('stoped');
+			this.emit('stopped');
 		} else {
 			yield P.delay(randomTime(TEST_WAIT_TIME));
 			yield this.joinArea();

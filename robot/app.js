@@ -1,12 +1,14 @@
 'use strict';
 
 var path = require('path');
+var P = require('bluebird');
 var EventEmitter = require('events').EventEmitter;
 var quick = require('quick-pomelo');
 var logger = quick.logger.getLogger('robot', __filename);
 var Getopt = require('node-getopt');
 var envConfig = require('./app/config/env.json');
 
+//P.longStackTraces();
 quick.logger.setGlobalLogLevel(quick.logger.levels.WARN);
 
 var getopt = new Getopt([

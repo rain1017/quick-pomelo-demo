@@ -78,10 +78,10 @@ module.exports = {
 			// },
 		},
 		// Add more shards
-		player2 : {
-			host : '127.0.0.1',
-			port : 31018,
-		},
+		// player2 : {
+		// 	host : '127.0.0.1',
+		// 	port : 31018,
+		// },
 		area1 : {
 			host : '127.0.0.1',
 			port : 31019,
@@ -94,10 +94,10 @@ module.exports = {
 			host : '127.0.0.1',
 			port : 31021,
 		},
-		team2 : {
-			host : '127.0.0.1',
-			port : 31022,
-		},
+		// team2 : {
+		// 	host : '127.0.0.1',
+		// 	port : 31022,
+		// },
 	},
 
 	// *** additional settings ***

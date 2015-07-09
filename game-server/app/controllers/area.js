@@ -65,7 +65,7 @@ proto.connectAsync = P.coroutine(function*(playerId, areaId) {
 		throw new Error('area ' + areaId + ' not exist');
 	}
 	if(_.indexOf(area.playerIds, playerId) === -1) {
-		throw new Error('player ' + playerId + ' not in area.playerIds');
+		throw new Error('player ' + playerId + ' not in area ' + areaId);
 	}
 	var res = {area: area.toClientData()};
 	var areaPlayers = [];

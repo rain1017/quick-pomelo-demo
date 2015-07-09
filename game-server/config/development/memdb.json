@@ -6,7 +6,7 @@
         },
         "player-server-2" : {
             "host" : "127.0.0.1",
-            "port" : 31018
+            "port" : 31017
         },
         "area-server-1" : {
             "host" : "127.0.0.1",
@@ -24,29 +24,13 @@
             "host" : "127.0.0.1",
             "port" : 31019
         },
-        "area-server-5" : {
-            "host" : "127.0.0.1",
-            "port" : 31019
-        },
-        "area-server-6" : {
-            "host" : "127.0.0.1",
-            "port" : 31019
-        },
-        "area-server-7" : {
-            "host" : "127.0.0.1",
-            "port" : 31019
-        },
-        "area-server-8" : {
-            "host" : "127.0.0.1",
-            "port" : 31019
-        },
         "team-server-1" : {
             "host" : "127.0.0.1",
             "port" : 31021
         },
         "team-server-2" : {
             "host" : "127.0.0.1",
-            "port" : 31022
+            "port" : 31021
         }
     }
 }

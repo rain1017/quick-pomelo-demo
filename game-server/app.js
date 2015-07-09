@@ -18,17 +18,16 @@ app.configure('all', function() {
 	app.enable('systemMonitor');
 
 	app.set('proxyConfig', {
-		cacheMsg : true,
+		bufferMsg : true,
 		interval : 30,
 		lazyConnection : true,
-		timeout : 10 * 1000,
+		timeout : 30 * 1000,
 		failMode : 'failfast',
 	});
 
 	app.set('remoteConfig', {
-		cacheMsg : true,
+		bufferMsg : true,
 		interval : 30,
-		timeout : 10 * 1000,
 	});
 
 	// Load route component
@@ -110,15 +109,12 @@ app.configure('all', 'area', function(){
 	app.load(require('./app/components/areaSearcher'));
 });
 
-
 app.configure('development', function(){
-    // require('heapdump');
-    // P.longStackTraces();
-    // quick.Promise.longStackTraces();
-    // quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
-    // pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
-    quick.logger.setGlobalLogLevel(quick.logger.levels.WARN);
-    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.WARN);
+    require('heapdump');
+    P.longStackTraces();
+    quick.Promise.longStackTraces();
+    quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
+    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
 });
 
 app.configure('production', function(){
