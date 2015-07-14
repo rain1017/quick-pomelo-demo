@@ -23,7 +23,7 @@
   },
   "dependencies": {
   	"quick-pomelo": "rain1017/quick-pomelo",
-    "bluebird": "~2.9.24",
+    "bluebird": "2.9.30",
     "grunt-cli": "~0.1.13",
     "heapdump": "~0.3.4",
     "lodash": "~3.2.0",

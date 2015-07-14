@@ -1,10 +1,8 @@
 'use strict';
 
-var P = require('bluebird');
 var should = require('should');
-var consts = require('../../app/consts');
-var cardArranger = require('../../robot/cardArranger');
-var logger = require('quick-pomelo').logger.getLogger('test', __filename);
+var consts = require('../../game-server/app/consts');
+var cardArranger = require('../app/cardArranger');
 
 describe('cardArranger', function(){
 

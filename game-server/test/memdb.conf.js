@@ -22,7 +22,7 @@ module.exports = {
     },
 
     log : {
-        path : '/tmp',
+        //path : process.env.HOME + '/.memdb/log',
         level : 'WARN',
     },
 
@@ -30,7 +30,7 @@ module.exports = {
         longStackTraces : false,
     },
 
-    collections : require('../config/.memdb.index'),
+    collections : require('../config/memdb.index'),
 
     shards : {
         s1 : {

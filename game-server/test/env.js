@@ -13,7 +13,7 @@ var logger = quick.logger.getLogger('test', __filename);
 var memdbClusterPath = '/usr/local/bin/memdbcluster';
 
 var execMemdbClusterSync = function(cmd){
-    var configPath = path.join(__dirname, '.memdb.js');
+    var configPath = path.join(__dirname, 'memdb.conf.js');
     var output = child_process.execFileSync(process.execPath, [memdbClusterPath, cmd, '--conf=' + configPath]);
     logger.info(output.toString());
 };

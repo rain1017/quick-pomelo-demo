@@ -254,10 +254,10 @@ exp._promotePairs = function(straits, pairs, trios) {
 
 exp._joinStraits = function(straits) {
 	while(true) {
-		found = false;
+		var found = false;
 		for11:
-		for (i = 0; i < straits.length; i++) {
-			for (j = i + 1; j < straits.length; j++) {
+		for (var i = 0; i < straits.length; i++) {
+			for (var j = i + 1; j < straits.length; j++) {
 				if(straits[i][straits[i].length-1] + 1 === straits[j][0]) {
 					var toadd = straits[i].concat(straits[j]);
 					straits.splice(j, 1);
@@ -328,7 +328,7 @@ exp._arrangeStraits = function(idxs, trios) {
 			if(trios[i] >= cardFormula.cardPoints['2']) {
 				break;
 			}
-			newidxs = idxs.slice();
+			var newidxs = idxs.slice();
 			exp._addToIdxs(newidxs, trios[i], 3);
 
 			var anyStraits = exp._findStraits(newidxs, 5, true);
