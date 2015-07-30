@@ -46,7 +46,7 @@ var memdbClientConfig = {
 };
 
 exports.redisIdGeneratorConfig = {
-	redis : {host : '127.0.0.1', port : 6379, db : 2},
+    redis : {host : '127.0.0.1', port : 6379, db : 2},
 };
 
 exports.createApp = function(serverId, serverType){
@@ -55,14 +55,14 @@ exports.createApp = function(serverId, serverType){
     app.setBase(path.join(__dirname, '..'));
     app.set('memdbConfig', memdbClientConfig);
 
-	var idgen = new RedisIDGenerator(exports.redisIdGeneratorConfig.redis);
-	idgen.initKey('player__id', 0, 1);
-	app.set('redisIdGenerator', idgen);
+    var idgen = new RedisIDGenerator(exports.redisIdGeneratorConfig.redis);
+    idgen.initKey('player__id', 0, 1);
+    app.set('redisIdGenerator', idgen);
 
     app.load(quick.components.memdb);
     app.load(quick.components.controllers);
     app.load(quick.components.timer);
-	app.load(require('../app/components/areaSearcher'));
+    app.load(require('../app/components/areaSearcher'));
 
     return app;
 };

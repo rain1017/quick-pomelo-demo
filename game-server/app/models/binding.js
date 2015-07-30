@@ -4,18 +4,18 @@ var _ = require('lodash');
 var consts = require('../consts');
 
 module.exports = function(app){
-	var mdbgoose = app.memdb.goose;
+    var mdbgoose = app.memdb.goose;
 
-	var bindingSchema = new mdbgoose.Schema({
-		_id : {type : String},
-		playerId : {type : Number, index : true},
-		socialId : {type : String},
-		socialType : {type : Number, validate: function(val){
-			return _.indexOf(_.values(consts.binding.types), val) !== -1;
-		}},
-	}, {collection : 'bindings'});
+    var bindingSchema = new mdbgoose.Schema({
+        _id : {type : String},
+        playerId : {type : Number, index : true},
+        socialId : {type : String},
+        socialType : {type : Number, validate: function(val){
+            return _.indexOf(_.values(consts.binding.types), val) !== -1;
+        }},
+    }, {collection : 'bindings'});
 
-	bindingSchema.index({socialId : 1, socialType : 1}, {unique : true});
+    bindingSchema.index({socialId : 1, socialType : 1}, {unique : true});
 
-	mdbgoose.model('Binding', bindingSchema);
+    mdbgoose.model('Binding', bindingSchema);
 };

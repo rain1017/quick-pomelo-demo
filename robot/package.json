@@ -2,19 +2,19 @@
     "name": "ddz-robot",
     "version": "0.1.0",
     "dependencies": {
-        "quick-pomelo": "rain1017/quick-pomelo",
-        "bluebird": "2.9.30",
+        "quick-pomelo": "memdb/quick-pomelo",
+        "bluebird": "~2.9.34",
         "lodash": "~3.2.0",
         "node-getopt": "~0.2.3",
         "node-uuid": "~1.4.3",
         "pomelo-robot": "~0.1.4"
     },
-	"devDependencies": {
-		"grunt-contrib-clean": "~0.6.0",
-		"grunt-contrib-jshint": "~0.10.0",
-		"grunt-env": "~0.4.2",
-		"grunt-mocha-cli": "^1.13.0",
-		"load-grunt-tasks": "~2.0.0",
-		"should": "~4.5.0"
-	}
+    "devDependencies": {
+        "grunt-contrib-clean": "~0.6.0",
+        "grunt-contrib-jshint": "~0.10.0",
+        "grunt-env": "~0.4.2",
+        "grunt-mocha-cli": "^1.13.0",
+        "load-grunt-tasks": "~2.0.0",
+        "should": "~4.5.0"
+    }
 }

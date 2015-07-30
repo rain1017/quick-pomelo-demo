@@ -6,7 +6,7 @@ var resp = require('../../../resp');
 var logger = require('quick-pomelo').logger.getLogger('connector', __filename);
 
 var Handler = function(app){
-	this.app = app;
+    this.app = app;
 };
 
 var proto = Handler.prototype;
@@ -15,53 +15,53 @@ var proto = Handler.prototype;
  * msg.auth - authentication data
  */
 proto.login = function(msg, session, next){
-	if(!!session.uid){
-		return next(new Error('session already logged in with playerId ' + session.uid));
-	}
+    if(!!session.uid){
+        return next(new Error('session already logged in with playerId ' + session.uid));
+    }
 
-	var authInfo = msg.authInfo;
-	if(!authInfo){
-		return next(new Error('authInfo is missing'));
-	}
+    var authInfo = msg.authInfo;
+    if(!authInfo){
+        return next(new Error('authInfo is missing'));
+    }
 
-	var self = this;
-	P.coroutine(function*(){
-		var playerEntryRemote = self.app.rpc.player.entryRemote;
-		var data = yield P.promisify(playerEntryRemote.login, playerEntryRemote)(session, msg, session.frontendId);
+    var self = this;
+    P.coroutine(function*(){
+        var playerEntryRemote = self.app.rpc.player.entryRemote;
+        var data = yield P.promisify(playerEntryRemote.login, playerEntryRemote)(session, msg, session.frontendId);
         yield P.promisify(session.bind, session)(data.playerId);
 
-		// OnDisconnect
-		session.on('closed', function(session, reason){
-			if(reason === 'kick' || !session.uid){
-				return;
-			}
-			// auto logout on disconnect
-			P.promisify(self.logout, self)({closed : true}, session)
-			.catch(function(e){
-				logger.warn(e.stack);
-			});
-		});
+        // OnDisconnect
+        session.on('closed', function(session, reason){
+            if(reason === 'kick' || !session.uid){
+                return;
+            }
+            // auto logout on disconnect
+            P.promisify(self.logout, self)({closed : true}, session)
+            .catch(function(e){
+                logger.warn(e.stack);
+            });
+        });
 
-		return resp.successResp(data.data);
-	})().nodeify(next);
+        return resp.successResp(data.data);
+    })().nodeify(next);
 };
 
 proto.logout = function(msg, session, next){
-	var playerId = session.uid;
-	if(!playerId){
-		return next(new Error('playerId is missing'));
-	}
+    var playerId = session.uid;
+    if(!playerId){
+        return next(new Error('playerId is missing'));
+    }
 
-	var self = this;
-	P.coroutine(function*(){
-		var playerEntryRemote = self.app.rpc.player.entryRemote;
-		var data = yield P.promisify(playerEntryRemote.logout, playerEntryRemote)(session, playerId);
-		if(!msg.closed) {
-			yield P.promisify(session.unbind, session)(playerId);
-		}
-	})().nodeify(next);
+    var self = this;
+    P.coroutine(function*(){
+        var playerEntryRemote = self.app.rpc.player.entryRemote;
+        var data = yield P.promisify(playerEntryRemote.logout, playerEntryRemote)(session, playerId);
+        if(!msg.closed) {
+            yield P.promisify(session.unbind, session)(playerId);
+        }
+    })().nodeify(next);
 };
 
 module.exports = function(app){
-	return new Handler(app);
+    return new Handler(app);
 };

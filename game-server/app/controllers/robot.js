@@ -8,18 +8,18 @@ var formula = require('../formula/formula');
 var logger = require('quick-pomelo').logger.getLogger('area', __filename);
 
 var Controller = function(app){
-	this.app = app;
+    this.app = app;
 };
 
 var proto = Controller.prototype;
 
 
 proto.dealCardsAsync = P.coroutine(function*(areaId){
-	// send player cards, arrange choose lord
-	yield P.resolve();
+    // send player cards, arrange choose lord
+    yield P.resolve();
 });
 
 
 module.exports = function(app){
-	return new Controller(app);
+    return new Controller(app);
 };

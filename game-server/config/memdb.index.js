@@ -3,30 +3,30 @@
 // Index definitions
 
 module.exports =  {
-	// Collection name
-	area_players : {
-		indexes : [
-			{
-				keys : ['areaId', 'playerId'],
-				unique : true,
-			},
-		]
-	},
+    // Collection name
+    area_players : {
+        indexes : [
+            {
+                keys : ['areaId', 'playerId'],
+                unique : true,
+            },
+        ]
+    },
 
-	bindings : {
-		indexes : [
-			{
-				keys : ['playerId'],
-			},
-			{
-				keys : ['socialId', 'socialType'],
-				unique : true,
-			},
-		]
-	},
+    bindings : {
+        indexes : [
+            {
+                keys : ['playerId'],
+            },
+            {
+                keys : ['socialId', 'socialType'],
+                unique : true,
+            },
+        ]
+    },
 
-	players : {
-		indexes : [
-		]
-	},
+    players : {
+        indexes : [
+        ]
+    },
 };

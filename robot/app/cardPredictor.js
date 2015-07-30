@@ -10,6 +10,6 @@ var logger = require('quick-pomelo').logger.getLogger('robot', __filename);
 var exp = module.exports;
 
 exp.hasGreaterCards = function(played, left, cards) {
-	var handType = cardFormula.getHandType(cards);
+    var handType = cardFormula.getHandType(cards);
 };
 

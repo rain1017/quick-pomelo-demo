@@ -4,19 +4,19 @@ var consts = require('../consts');
 var _ = require('lodash');
 
 module.exports = function(app){
-	var mdbgoose = app.memdb.goose;
+    var mdbgoose = app.memdb.goose;
 
-	var playerSchema = new mdbgoose.Schema({
-		_id : {type : Number},
-		areaId : {type : String},
-		teamId : {type : String},
-		connectorId : {type : String},
-		name : {type : String, default: ''},
+    var playerSchema = new mdbgoose.Schema({
+        _id : {type : Number},
+        areaId : {type : String},
+        teamId : {type : String},
+        connectorId : {type : String},
+        name : {type : String, default: ''},
         sex : {type : Number, default: consts.sex.MALE, validate: function(val){
             return _.indexOf(_.values(consts.sex), val) !== -1;
         }},
         money : {type : Number, min : 0},
-	}, {collection : 'players'});
+    }, {collection : 'players'});
 
     playerSchema.statics.getUpdatableKeys = function() {
         return ['name', 'sex'];
@@ -33,5 +33,5 @@ module.exports = function(app){
         };
     };
 
-	mdbgoose.model('Player', playerSchema);
+    mdbgoose.model('Player', playerSchema);
 };

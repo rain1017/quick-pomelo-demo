@@ -1,3 +1,5 @@
+#!/usr/bin/node --harmony
+
 'use strict';
 
 var path = require('path');
@@ -24,8 +26,8 @@ var env = opt.options.env || envConfig.env;
 envConfig.env = env;
 
 if (mode !== 'master' && mode !== 'client'){
-	getopt.showHelp();
-	process.exit(1);
+    getopt.showHelp();
+    process.exit(1);
 }
 
 var config = require('./app/config/' + env + '/config');
@@ -36,12 +38,12 @@ if (mode === 'master') {
     robot.runMaster(__filename);
 }
 else if (mode === 'client') {
-	global.config = config.robot;
-	global.basedir = __dirname;
-	var scriptPath = path.join(__dirname, envConfig.script);
+    global.config = config.robot;
+    global.basedir = __dirname;
+    var scriptPath = path.join(__dirname, envConfig.script);
     robot.runAgent(scriptPath);
 }
 
 process.on('uncaughtException', function(err) {
-	logger.error(err.stack);
+    logger.error(err.stack);
 });
