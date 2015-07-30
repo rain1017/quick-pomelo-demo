@@ -24,7 +24,7 @@
     "dependencies": {
         "quick-pomelo": "memdb/quick-pomelo",
         "pomelo": "memdb/pomelo",
-        "redis-id-generator": "gmlove/redis-id-generator",
+        "redis-id-generator": "~0.1.0",
         "bluebird": "~2.9.34",
         "grunt-cli": "~0.1.13",
         "heapdump": "~0.3.4",
