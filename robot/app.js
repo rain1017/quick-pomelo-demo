@@ -1,5 +1,3 @@
-#!/usr/bin/node --harmony
-
 'use strict';
 
 var path = require('path');

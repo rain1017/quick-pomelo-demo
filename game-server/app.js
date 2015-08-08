@@ -1,5 +1,3 @@
-#!/usr/bin/node --harmony
-
 'use strict';
 
 var P = require('bluebird');
@@ -113,10 +111,10 @@ app.configure('all', 'area', function(){
 
 app.configure('development', function(){
     require('heapdump');
-    //P.longStackTraces();
-    //quick.Promise.longStackTraces();
-    quick.logger.setGlobalLogLevel(quick.logger.levels.WARN);
-    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.WARN);
+    P.longStackTraces();
+    quick.Promise.longStackTraces();
+    quick.logger.setGlobalLogLevel(quick.logger.levels.DEBUG);
+    pomeloLogger.setGlobalLogLevel(pomeloLogger.levels.DEBUG);
 });
 
 app.configure('production', function(){
