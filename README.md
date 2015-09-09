@@ -1,11 +1,11 @@
 # quick-pomelo-demo
 
-Demo of [quick-pomelo](http://github.com/memdb/quick-pomelo)
+__Demo of [quick-pomelo](http://github.com/rain1017/quick-pomelo)__
 
 ## Server Quick Start
 
 #### Install MemDB
-[Guide](https://github.com/memdb/memdb#install-dependencies)
+[Guide](https://github.com/rain1017/memdb#install-dependencies)
 
 #### Start MemDB 
 ```
@@ -15,8 +15,7 @@ memdbcluster start --conf=./game-server/config/development/memdb.conf.js
 
 #### Install pomelo
 ```
-sudo apt-get install -g memdb/pomelo
-
+sudo apt-get install -g rain1017/pomelo
 ```
 
 #### Start server

@@ -2,15 +2,15 @@
     "name": "quick-pomelo-demo",
     "description": "quick pomelo demo",
     "version": "0.1.0",
-    "author": "memdb",
+    "author": "gmlove",
     "private": false,
-    "homepage": "https://github.com/memdb/quick-pomelo-demo",
+    "homepage": "https://github.com/rain1017/quick-pomelo-demo",
     "repository": {
         "type": "git",
-        "url": "https://github.com/memdb/quick-pomelo-demo.git"
+        "url": "https://github.com/rain1017/quick-pomelo-demo.git"
     },
     "bugs": {
-        "url": "https://github.com/memdb/quick-pomelo-demo/issues"
+        "url": "https://github.com/rain1017/quick-pomelo-demo/issues"
     },
     "keywords": [],
     "engines": {
@@ -22,15 +22,14 @@
         "postinstall": ""
     },
     "dependencies": {
-        "quick-pomelo": "memdb/quick-pomelo",
-        "pomelo": "memdb/pomelo",
+        "quick-pomelo": "rain1017/quick-pomelo",
+        "pomelo": "rain1017/pomelo",
         "redis-id-generator": "~0.1.0",
         "bluebird": "~2.9.34",
         "grunt-cli": "~0.1.13",
-        "heapdump": "~0.3.4",
+        "heapdump": "~0.3.7",
         "lodash": "~3.2.0",
-        "node-uuid": "^1.4.3",
-        "pomelo-cli": "~0.1.2"
+        "node-uuid": "^1.4.3"
     },
     "devDependencies": {
         "blanket": "~1.1.6",
@@ -42,7 +41,6 @@
         "grunt-mocha-cli": "^1.13.0",
         "grunt-mocha-cov": "^0.4.0",
         "grunt-mocha-test": "~0.12.6",
-        "grunt-node-inspector": "~0.1.5",
         "grunt-nodemon": "~0.3.0",
         "load-grunt-tasks": "~2.0.0",
         "should": "~4.5.0",
