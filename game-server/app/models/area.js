@@ -35,12 +35,12 @@ module.exports = function(app){
 
     }, {collection: 'areas'});
 
-    areaSchema.methods.isWaitToStartState = () => this.state === consts.gameState.waitToStart;
-    areaSchema.methods.isChoosingLordState = () => this.state === consts.gameState.choosingLord;
-    areaSchema.methods.isPlayingState = () => this.state === consts.gameState.playing;
-    areaSchema.methods.isOngoingState = () => this.isPlayingState() || this.isChoosingLordState();
+    areaSchema.methods.isWaitToStartState = function(){return this.state === consts.gameState.waitToStart;};
+    areaSchema.methods.isChoosingLordState = function(){return this.state === consts.gameState.choosingLord;};
+    areaSchema.methods.isPlayingState = function(){return this.state === consts.gameState.playing;};
+    areaSchema.methods.isOngoingState = function(){return this.isPlayingState() || this.isChoosingLordState();};
 
-    areaSchema.methods.playerCount = () => this.playerIds.filter((p) => !!p && p > 0).length;
+    areaSchema.methods.playerCount = function(){return this.playerIds.filter((p) => !!p && p > 0).length;};
     areaSchema.methods.availPos = function() {
         for (var i = 0; i < this.playerIds.length; i++) {
             if(!this.playerIds[i] || this.playerIds[i] === -1) {
@@ -83,9 +83,9 @@ module.exports = function(app){
         }
         return lastTurn + 1 >= 3 ? lastTurn + 1 - 3 : lastTurn + 1;
     };
-    areaSchema.methods.playingPlayerId = () => this.playerIds[this.lastTurn];
-    areaSchema.methods.turnOfPlayer = (playerId) => _.indexOf(this.playerIds, playerId);
-    areaSchema.methods.isLordChoosed = () => this.landlord !== -1;
+    areaSchema.methods.playingPlayerId = function(){return this.playerIds[this.lastTurn];};
+    areaSchema.methods.turnOfPlayer = function(playerId){return _.indexOf(this.playerIds, playerId);};
+    areaSchema.methods.isLordChoosed = function(){return this.landlord !== -1;};
     areaSchema.methods.isChoosingLordDone = function(){
         return (this.firstChoosedLord && this.landlordChooseTimes >= 4) ||
             (this.firstChoosedLord && this.landlord === this.firstChoosePlayerId && this.landlordChooseTimes >= 3) ||

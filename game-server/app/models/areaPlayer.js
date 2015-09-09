@@ -30,7 +30,7 @@ module.exports = function(app){
         return this.cards.length;
     });
 
-    areaPlayerSchema.methods.isLandlord = (area) => area.landlord === this.playerId;
+    areaPlayerSchema.methods.isLandlord = function(area){return area.landlord === this.playerId;};
 
     areaPlayerSchema.methods.toClientData = function(){
         return {
